@@ -6,7 +6,7 @@ test("home page exposes the mock interview workflow", async ({ page }) => {
   await expect(page.getByRole("heading", { name: "Mock Interview Tool", level: 1 })).toBeVisible();
   await page.getByRole("link", { name: /start interview/i }).click();
   await expect(page.getByRole("heading", { name: /run a realistic interview round/i })).toBeVisible();
-  await expect(page.getByText(/Voice mode is ready|Recording is ready|This browser cannot record/i)).toBeVisible();
+  await expect(page.getByText(/Voice mode is ready|Recording is ready|This browser cannot record|Voice mode checks your browser capabilities/i)).toBeVisible();
   await expect(page.getByText(/Question 1 of 7/i)).toBeVisible();
 
   await page.getByRole("button", { name: /^Software/i }).click();

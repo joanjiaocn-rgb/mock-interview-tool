@@ -75,7 +75,11 @@ export default function HomePage() {
             <BriefcaseBusiness size={16} aria-hidden="true" />
             Interview practice for serious candidates
           </p>
-          <h1>Mock Interview Tool</h1>
+          <h1>
+            Mock Interview
+            <br />
+            Tool
+          </h1>
           <p className="hero-copy">
             Practice 5-10 question interview rounds with role-specific prompts, answer notes, a practical scoring rubric, and a report you can use for the next drill.
           </p>
