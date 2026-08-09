@@ -11,7 +11,7 @@
 - Accounts: not enabled.
 - Payments: not enabled.
 - AI API: not enabled.
-- Analytics: not configured.
+- Analytics: Google Analytics 4 via Google tag; page views and interaction events only. Resume text, answer text, microphone audio, and transcripts are not sent.
 
 ## Legal Routes
 - /privacy
@@ -20,6 +20,7 @@
 
 ## P0 Risks Before Production
 - If AI feedback is added, update Privacy and Terms to disclose provider, retention, and data use.
+- If analytics vendors or consent controls are changed, update Privacy and Terms to match the actual events and cookie behavior.
 - If PDF/DOCX parsing or server-side resume storage is added, update Privacy and Terms before launch.
 - If server-side audio transcription is added, disclose provider, retention, deletion, and user consent.
 - If accounts are added, define authentication, deletion, session retention, and breach contact paths.

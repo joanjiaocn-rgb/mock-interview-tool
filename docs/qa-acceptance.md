@@ -7,6 +7,7 @@
 - Header and footer links are valid.
 - Canonical metadata is present.
 - FAQ schema is included on home.
+- GA4 pageviews fire on navigation when the Google tag is configured.
 
 ## Tool Task Checks
 - Select each role.
@@ -22,6 +23,7 @@
 - Rubric sliders update readiness score.
 - Export report downloads a text file.
 - Reset clears current session.
+- Analytics events do not include resume text, answer text, or microphone audio.
 
 ## Mobile Checks
 - No horizontal scroll at 375px width.

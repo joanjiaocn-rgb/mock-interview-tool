@@ -29,9 +29,9 @@ export default function PrivacyPage() {
         Voice answer mode uses your browser microphone permission, records audio locally for session playback, and uses browser speech recognition for live transcript when available. Audio is not uploaded or stored by this site.
       </p>
       <h2>Analytics</h2>
-      <p>Analytics are not configured in this local build. If analytics are added later, this policy should be updated before public launch.</p>
+      <p>Google Analytics 4 is enabled through Google tag to measure page views and product interactions. The site does not send resume text, answer text, microphone audio, or transcripts to Google Analytics. Google may process browser, device, IP, and cookie data according to its own terms.</p>
       <h2>Third-Party Services</h2>
-      <p>No payment, automated scoring, authentication, email, or storage provider is connected in this build.</p>
+      <p>No payment, automated scoring, authentication, email, or storage provider is connected in this build. Analytics are handled by Google Analytics 4.</p>
       <h2>Contact</h2>
       <p>For privacy questions, email {site.supportEmail}.</p>
     </main>

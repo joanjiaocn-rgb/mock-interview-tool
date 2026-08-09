@@ -20,6 +20,7 @@ import {
   Upload,
   Volume2,
 } from "lucide-react";
+import { trackAnalyticsEvent } from "@/lib/analytics";
 
 type BrowserSpeechAlternative = {
   transcript: string;
@@ -539,6 +540,25 @@ export function InterviewStudio() {
   }, [answers, notes, scores]);
 
   const activeAnswer = answers[activeQuestion] ?? "";
+  const analyticsContext = {
+    role,
+    level,
+    format,
+    question_count: questionCount,
+    resume_mode: useResumeQuestions ? "resume" : "bank",
+  };
+
+  const reportAnalyticsEvent = (
+    eventName: string,
+    params: Record<string, string | number | boolean> = {},
+    overrides: Partial<typeof analyticsContext> = {},
+  ) => {
+    trackAnalyticsEvent(eventName, {
+      ...analyticsContext,
+      ...overrides,
+      ...params,
+    });
+  };
 
   const updateAnswer = (value: string) => {
     setAnswers((current) => {
@@ -593,6 +613,9 @@ export function InterviewStudio() {
     setRunning(false);
     setSeconds(getRoundSeconds(format, questionCount));
     setResumeStatus(`Tailored ${questionCount}-question round is active.`);
+    reportAnalyticsEvent("resume_round_build", {
+      resume_source: resumeName ? "file" : "paste",
+    });
     window.setTimeout(() => answerRef.current?.focus(), 0);
   };
 
@@ -604,6 +627,8 @@ export function InterviewStudio() {
   };
 
   const downloadReport = () => {
+    reportAnalyticsEvent("export_report");
+
     const report = [
       "Mock Interview Practice Report",
       `Role: ${roles.find((item) => item.id === role)?.label}`,
@@ -636,6 +661,7 @@ export function InterviewStudio() {
   };
 
   const resetRound = () => {
+    reportAnalyticsEvent("reset_round");
     setRunning(false);
     setSeconds(getRoundSeconds(format, questionCount));
     setActiveQuestion(0);
@@ -651,6 +677,7 @@ export function InterviewStudio() {
   };
 
   const toggleInterview = () => {
+    reportAnalyticsEvent(running ? "interview_pause" : "interview_start");
     setRunning((current) => !current);
     window.setTimeout(() => answerRef.current?.focus(), 0);
   };
@@ -665,6 +692,7 @@ export function InterviewStudio() {
       window.speechSynthesis.cancel();
       setIsPromptReading(false);
       setVoiceStatus("Prompt reading stopped.");
+      reportAnalyticsEvent("prompt_read", { action: "stop" });
       return;
     }
 
@@ -683,6 +711,7 @@ export function InterviewStudio() {
     utterance.onstart = () => {
       setIsPromptReading(true);
       setVoiceStatus("Reading the prompt aloud.");
+      reportAnalyticsEvent("prompt_read", { action: "start" });
     };
     utterance.onend = () => {
       setIsPromptReading(false);
@@ -698,6 +727,7 @@ export function InterviewStudio() {
   };
 
   const stopVoiceInput = () => {
+    reportAnalyticsEvent("record_answer", { action: "stop" });
     recognitionRef.current?.stop();
     recognitionRef.current = null;
     if (mediaRecorderRef.current?.state === "recording") {
@@ -708,7 +738,7 @@ export function InterviewStudio() {
     audioStreamRef.current = null;
     setIsListening(false);
     setIsRecording(false);
-    setVoiceStatus("Recording stopped. You can play the audio and edit the transcript.");
+      setVoiceStatus("Recording stopped. You can play the audio and edit the transcript.");
   };
 
   const startVoiceInput = async () => {
@@ -800,6 +830,10 @@ export function InterviewStudio() {
       recorder.start();
       setRunning(true);
       setIsRecording(true);
+      reportAnalyticsEvent("record_answer", {
+        action: "start",
+        live_transcript: Boolean(Recognition),
+      });
       setVoiceStatus(Recognition ? "Recording and transcribing. Answer out loud." : "Recording audio. Live transcript is not available in this browser.");
       window.setTimeout(() => answerRef.current?.focus(), 0);
     } catch (error) {
@@ -829,12 +863,15 @@ export function InterviewStudio() {
         <aside className="setup-panel" aria-label="Interview setup">
           <div className="control-group">
             <h3>Role</h3>
-            <div className="choice-list">
+          <div className="choice-list">
               {roles.map((item) => (
                 <button
                   className={item.id === role ? "choice-button active" : "choice-button"}
                   key={item.id}
-                  onClick={() => setRole(item.id)}
+                  onClick={() => {
+                    setRole(item.id);
+                    reportAnalyticsEvent("role_change", { selected_role: item.id }, { role: item.id });
+                  }}
                   type="button"
                 >
                   <span>{item.label}</span>
@@ -851,7 +888,10 @@ export function InterviewStudio() {
                 <button
                   className={item.id === level ? "segment active" : "segment"}
                   key={item.id}
-                  onClick={() => setLevel(item.id)}
+                  onClick={() => {
+                    setLevel(item.id);
+                    reportAnalyticsEvent("level_change", { selected_level: item.id }, { level: item.id });
+                  }}
                   type="button"
                 >
                   {item.label}
@@ -867,7 +907,10 @@ export function InterviewStudio() {
                 <button
                   className={item.id === format ? "segment active" : "segment"}
                   key={item.id}
-                  onClick={() => setFormat(item.id)}
+                  onClick={() => {
+                    setFormat(item.id);
+                    reportAnalyticsEvent("format_change", { selected_format: item.id }, { format: item.id });
+                  }}
                   type="button"
                 >
                   {item.label}
@@ -883,7 +926,10 @@ export function InterviewStudio() {
                 <button
                   className={item.id === questionCount ? "segment active" : "segment"}
                   key={item.id}
-                  onClick={() => setQuestionCount(item.id)}
+                  onClick={() => {
+                    setQuestionCount(item.id);
+                    reportAnalyticsEvent("round_length_change", { selected_question_count: item.id }, { question_count: item.id });
+                  }}
                   type="button"
                 >
                   <span>{item.label}</span>

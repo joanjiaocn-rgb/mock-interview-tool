@@ -23,6 +23,8 @@ export default function TermsPage() {
       <p>You are responsible for the content you type into the tool. Avoid entering confidential employer data, personal identifiers, or sensitive private information.</p>
       <h2>Availability</h2>
       <p>This version is offered as a public v0 without service-level commitments. Features may change as the product evolves.</p>
+      <h2>Analytics</h2>
+      <p>The site may use Google Analytics 4 to measure visits and feature interactions. Analytics events are limited to usage metadata and do not include resume text, answer text, audio, or transcripts.</p>
       <h2>Contact</h2>
       <p>Questions about these terms can be sent to {site.supportEmail}.</p>
     </main>

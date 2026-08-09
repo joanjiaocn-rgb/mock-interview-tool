@@ -221,7 +221,7 @@ export default function HomePage() {
           </p>
           <h2>Before public launch, connect evidence instead of pretending.</h2>
           <p>
-            The local build is ready for review. Production deployment, analytics, GSC/Bing submission, public posting, payments, and automated scoring still require owner confirmation and credentials.
+            The local build is ready for review. Production deployment, GSC/Bing submission, public posting, payments, and automated scoring still require owner confirmation and credentials.
           </p>
         </div>
       </section>

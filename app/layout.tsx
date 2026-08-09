@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { BriefcaseBusiness, Mail, ShieldCheck } from "lucide-react";
 import "./globals.css";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { routes, site, siteIds } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -68,6 +69,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }} />
+        <GoogleAnalytics />
         <div className="page-shell">
           <header className="site-header">
             <a className="brand" href="/" aria-label={`${site.name} home`}>
