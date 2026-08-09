@@ -1,0 +1,10 @@
+.next/
+out/
+node_modules/
+test-results/
+playwright-report/
+dev-server.log
+.env
+.env.local
+.vercel/
+.wrangler/
