@@ -1,13 +1,13 @@
 export const site = {
-  name: "Mock Interview Tool",
-  shortName: "InterviewLab",
+  name: "Interview English Coach",
+  shortName: "EnglishCoach",
   url: "https://mock-interview-tool.pages.dev",
   description:
-    "Practice realistic 5-10 question mock interviews with role-based prompts, timed rounds, structured notes, scoring rubrics, and a downloadable prep report.",
-  authorName: "Mock Interview Tool",
+    "Free English behavioral interview prep for non-native speakers. Paste a job description and resume to generate likely questions, Chinese strategy, STAR outlines, English answer drafts, and a cheat sheet.",
+  authorName: "Interview English Coach",
   supportEmail: "support@example.com",
   publishedAt: "2026-08-09",
-  updatedAt: "2026-08-09",
+  updatedAt: "2026-08-11",
 };
 
 export const siteIds = {
@@ -17,7 +17,11 @@ export const siteIds = {
 };
 
 export const routes = [
-  { path: "/", label: "Practice" },
+  { path: "/", label: "Home" },
+  { path: "/practice", label: "Practice" },
+  { path: "/answer-builder", label: "Answer Builder" },
+  { path: "/examples", label: "Examples" },
+  { path: "/pricing", label: "Pricing" },
   { path: "/about", label: "About" },
   { path: "/privacy", label: "Privacy" },
   { path: "/terms", label: "Terms" },

@@ -1,10 +1,10 @@
-# Mock Interview Tool Project Control
+# Interview English Coach Project Control
 
 ## Launch Card
-- Project: Mock Interview Tool
+- Project: Interview English Coach
 - Target market: US / English
-- Site type: interactive interview practice tool with SEO landing page
-- Primary keyword line: mock interview tool, AI mock interview generator, interview practice tool
+- Site type: free English behavioral interview prep tool with SEO landing page
+- Primary keyword line: English interview practice for Chinese speakers, STAR interview answer builder, English behavioral interview prep
 - Current status: local v0 implementation
 - Public launch: pending owner review
 
@@ -23,7 +23,7 @@
 - 12 Data Review: template only until analytics and launch data exist.
 
 ## Gates
-- PM Gate: v0 solves the core user task of practicing and grading an interview answer.
+- PM Gate: v0 solves the core user task of turning a JD and resume into likely behavioral questions, Chinese strategy, English answer drafts, and a cheat sheet.
 - SEO Gate: sitemap, robots, canonical metadata, FAQ schema, and llms.txt included.
 - Compliance Gate: privacy and terms routes included; no claims of guaranteed job outcomes.
 - Owner Review Gate: required before public deployment, paid checkout, AI API, analytics, or external launch.
@@ -31,5 +31,5 @@
 ## Open Items
 - Replace placeholder support email.
 - Confirm production domain.
-- Decide whether Pro features will use AI scoring, account storage, video, or human coaching.
+- Decide whether future features will use AI scoring, account storage, video, or human coaching.
 - Configure analytics only after privacy text is updated.

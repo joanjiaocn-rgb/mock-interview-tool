@@ -1,18 +1,10 @@
 import type { Metadata } from "next";
-import {
-  ArrowRight,
-  BadgeCheck,
-  BarChart3,
-  BriefcaseBusiness,
-  Clock4,
-  LockKeyhole,
-  MessageSquareText,
-} from "lucide-react";
+import { ArrowRight, BadgeCheck, CheckCircle2, Languages, Mic, Video, XCircle } from "lucide-react";
 import { InterviewStudio } from "@/components/InterviewStudio";
 import { site, siteIds } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Mock Interview Tool | Practice Interviews With Timed Feedback",
+  title: "Interview English Coach | Free English Interview Prep",
   description: site.description,
   alternates: {
     canonical: site.url,
@@ -26,7 +18,7 @@ const pageSchema = {
       "@type": "WebPage",
       "@id": `${site.url}/#webpage`,
       url: site.url,
-      name: "Mock Interview Tool",
+      name: "Interview English Coach",
       description: site.description,
       inLanguage: "en-US",
       datePublished: site.publishedAt,
@@ -39,18 +31,18 @@ const pageSchema = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "Is this mock interview tool free?",
+          name: "Is Interview English Coach free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "The current public v0 is free and runs in the browser. Paid scoring and account features are not enabled in this build.",
+            text: "The current v0 is free and does not require payment, checkout, or an account.",
           },
         },
         {
           "@type": "Question",
-          name: "Does it record audio or video?",
+          name: "Should this product include voice or video interviews?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "It can record microphone audio locally in the browser for answer playback. It does not upload audio to a production server or record video.",
+            text: "Voice practice is a good second-stage feature. Video interviews are not recommended for the first version because they add privacy and implementation complexity before the core answer workflow is proven.",
           },
         },
       ],
@@ -58,137 +50,95 @@ const pageSchema = {
   ],
 };
 
-const proofItems = [
-  { value: "6", label: "role tracks" },
-  { value: "5-10", label: "questions per round" },
-  { value: "5-point", label: "scoring rubric" },
-  { value: "0", label: "server-side answer storage" },
+const steps = [
+  { title: "Paste JD", body: "Add the role description so questions match the interview." },
+  { title: "Paste resume", body: "Add bullets or stories you want to turn into answers." },
+  { title: "Practice", body: "Get questions, STAR outlines, English drafts, and a cheat sheet." },
+];
+
+const features = [
+  "JD-aware behavioral questions",
+  "Chinese strategy before English rewriting",
+  "STAR answer outlines",
+  "Exportable interview cheat sheet",
 ];
 
 export default function HomePage() {
   return (
     <main className="main">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
-      <section className="hero" aria-label="Mock Interview Tool">
-        <div className="hero-copy-block">
+      <section className="simple-hero" aria-label="Interview English Coach">
+        <div className="simple-hero-copy">
           <p className="section-kicker">
-            <BriefcaseBusiness size={16} aria-hidden="true" />
-            Interview practice for serious candidates
+            <Languages size={16} aria-hidden="true" />
+            Free English behavioral interview prep
           </p>
-          <h1>
-            Mock Interview
-            <br />
-            Tool
-          </h1>
+          <h1>Turn your resume into English interview answers.</h1>
           <p className="hero-copy">
-            Practice 5-10 question interview rounds with role-specific prompts, answer notes, a practical scoring rubric, and a report you can use for the next drill.
+            Paste a job description and your resume. Get likely behavioral interview questions, {"\u4e2d\u6587\u601d\u8def"}, STAR structure, polished English drafts, and a last-minute cheat sheet.
           </p>
           <div className="hero-actions">
             <a className="button primary" href="#studio">
-              Start interview
+              Try it free
               <ArrowRight size={17} aria-hidden="true" />
             </a>
-            <a className="button secondary" href="#rubric">
-              View rubric
+            <a className="button secondary" href="/examples">
+              See examples
             </a>
           </div>
         </div>
 
-        <div className="hero-visual" aria-label="Interview workflow preview">
-          <div className="signal-rail">
-            <span>Prep</span>
-            <span className="active">Live</span>
-            <span>Review</span>
-          </div>
-          <div className="interview-card">
-            <div className="interview-card-top">
+        <div className="quick-start-panel" aria-label="How it works">
+          {steps.map((step, index) => (
+            <article key={step.title}>
+              <span>{index + 1}</span>
               <div>
-                <p>Product Manager</p>
-                <strong>Mixed Loop</strong>
+                <h2>{step.title}</h2>
+                <p>{step.body}</p>
               </div>
-              <span>08:00</span>
-            </div>
-            <h2>Prioritize follow-up prompts, video replay, or resume-aware practice.</h2>
-            <div className="mini-transcript">
-              <span>Answer structure</span>
-              <div style={{ width: "92%" }} />
-              <div style={{ width: "78%" }} />
-              <div style={{ width: "64%" }} />
-            </div>
-            <div className="score-grid">
-              <span>Structure 4</span>
-              <span>Evidence 3</span>
-              <span>Clarity 4</span>
-            </div>
-          </div>
-          <div className="floating-note">
-            <MessageSquareText size={16} aria-hidden="true" />
-            Push for tradeoffs, not theater.
-          </div>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section className="proof-band" aria-label="Product capabilities">
-        {proofItems.map((item) => (
-          <div key={item.label}>
-            <strong>{item.value}</strong>
-            <span>{item.label}</span>
+      <section className="feature-strip" aria-label="Core features">
+        {features.map((feature) => (
+          <div key={feature}>
+            <CheckCircle2 size={17} aria-hidden="true" />
+            <span>{feature}</span>
           </div>
         ))}
       </section>
 
       <InterviewStudio />
 
-      <section className="content-band" id="rubric">
-        <div className="content-heading">
-          <p className="section-kicker">
-            <BarChart3 size={16} aria-hidden="true" />
-            Rubric
-          </p>
-          <h2>Score the answer on the things interviewers actually probe.</h2>
-        </div>
-        <div className="rubric-cards">
-          <article>
-            <h3>Structure</h3>
-            <p>Can the interviewer follow the answer without assembling it themselves?</p>
-          </article>
-          <article>
-            <h3>Evidence</h3>
-            <p>Does the answer include concrete stakes, constraints, numbers, or artifacts?</p>
-          </article>
-          <article>
-            <h3>Depth</h3>
-            <p>Does the candidate explain tradeoffs, risks, and how judgment changed?</p>
-          </article>
-          <article>
-            <h3>Follow-up</h3>
-            <p>Can the candidate handle pressure without drifting into a rehearsed monologue?</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="content-band split-band" id="pricing">
+      <section className="content-band voice-video-band" id="voice-video">
         <div>
           <p className="section-kicker">
-            <LockKeyhole size={16} aria-hidden="true" />
-            Pricing
+            <Mic size={16} aria-hidden="true" />
+            Voice and video
           </p>
-          <h2>Free local-first v0.</h2>
+          <h2>Voice later. Video not yet.</h2>
           <p>
-            This version does not connect paid checkout, accounts, server storage, video recording, or automated scoring. Resume text, interview answers, and local audio clips stay in the browser session.
+            The first job is to prove users want JD-aware questions and better English answers. Voice practice is useful after that because it tests delivery, pace, and confidence. Video adds privacy, storage, permission, and UX complexity before the core workflow is validated.
           </p>
         </div>
-        <div className="pricing-table">
-          <div>
-            <strong>Free</strong>
-            <span>$0</span>
-            <p>5-10 question rounds, resume-tailored prompts, local audio recording, browser transcript when supported, timer, notes, manual rubric, and text report export.</p>
-          </div>
-          <div>
-            <strong>Pro concept</strong>
-            <span>TBD</span>
-            <p>Follow-up prompts, saved sessions, transcript review, and coach templates. Not enabled in this build.</p>
-          </div>
+        <div className="decision-grid">
+          <article>
+            <Mic size={18} aria-hidden="true" />
+            <h3>Phase 2: voice</h3>
+            <p>Record or transcribe spoken answers, then compare spoken English with the polished draft.</p>
+          </article>
+          <article>
+            <Video size={18} aria-hidden="true" />
+            <h3>Later: video</h3>
+            <p>Add only if users ask for camera rehearsal after the text and voice workflow works.</p>
+          </article>
+          <article>
+            <XCircle size={18} aria-hidden="true" />
+            <h3>Not v0</h3>
+            <p>No video upload, no saved recordings, no interview outcome guarantee.</p>
+          </article>
         </div>
       </section>
 
@@ -199,34 +149,21 @@ export default function HomePage() {
         </p>
         <div className="faq-list">
           <article>
-            <h2>Can I use it for technical interviews?</h2>
-            <p>Yes. Pick Software and Technical to get architecture, debugging, data modeling, and launch-readiness prompts.</p>
+            <h2>Who is this for?</h2>
+            <p>Chinese speakers, international students, and other non-native English speakers preparing for English behavioral interviews.</p>
           </article>
           <article>
-            <h2>Does the tool guarantee interview results?</h2>
-            <p>No. It is a practice aid, not an employment guarantee. The goal is better structure, stronger evidence, and calmer repetition.</p>
+            <h2>Is it free?</h2>
+            <p>Yes. The current v0 has no payment, subscription, or account requirement.</p>
           </article>
           <article>
-            <h2>Where are my answers stored?</h2>
-            <p>In this v0, resume text, answers, notes, and recorded audio clips stay in the browser session. There is no production account or server storage wired up.</p>
+            <h2>Is my resume stored?</h2>
+            <p>This v0 runs as a browser-side prep tool. Avoid entering highly sensitive personal or employer-confidential details.</p>
           </article>
           <article>
-            <h2>How long should one drill take?</h2>
-            <p>Choose 5, 7, or 10 prompts. Standard rounds use about four minutes per prompt; case rounds use about six minutes per prompt.</p>
+            <h2>Does it guarantee an offer?</h2>
+            <p>No. It is a practice and writing aid. It cannot guarantee interviews, offers, or hiring outcomes.</p>
           </article>
-        </div>
-      </section>
-
-      <section className="content-band launch-band">
-        <div>
-          <p className="section-kicker">
-            <Clock4 size={16} aria-hidden="true" />
-            Next gates
-          </p>
-          <h2>Before public launch, connect evidence instead of pretending.</h2>
-          <p>
-            The local build is ready for review. Production deployment, GSC/Bing submission, public posting, payments, and automated scoring still require owner confirmation and credentials.
-          </p>
         </div>
       </section>
     </main>

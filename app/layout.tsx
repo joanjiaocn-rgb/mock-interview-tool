@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { BriefcaseBusiness, Mail, ShieldCheck } from "lucide-react";
+import { Mail, ShieldCheck } from "lucide-react";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { routes, site, siteIds } from "@/lib/site";
@@ -14,7 +14,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "Mock Interview Tool | Practice Interviews With Timed Feedback",
+    default: "Interview English Coach | Free English Interview Prep",
     template: `%s | ${site.shortName}`,
   },
   description: site.description,
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     canonical: site.url,
   },
   openGraph: {
-    title: "Mock Interview Tool | Practice Interviews With Timed Feedback",
+    title: "Interview English Coach | Free English Interview Prep",
     description: site.description,
     url: site.url,
     type: "website",
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mock Interview Tool | Practice Interviews With Timed Feedback",
+    title: "Interview English Coach | Free English Interview Prep",
     description: site.description,
   },
 };
@@ -80,15 +80,14 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <div className="page-shell">
           <header className="site-header">
             <a className="brand" href="/" aria-label={`${site.name} home`}>
-              <span className="brand-mark" aria-hidden="true">
-                <BriefcaseBusiness size={20} />
-              </span>
+              <span className="brand-mark" aria-hidden="true">EC</span>
               <span>{site.shortName}</span>
             </a>
             <nav className="nav-links" aria-label="Main navigation">
-              <a href="/#studio">Studio</a>
-              <a href="/#rubric">Rubric</a>
-              <a href="/#pricing">Pricing</a>
+              <a href="/practice">Practice</a>
+              <a href="/answer-builder">Builder</a>
+              <a href="/examples">Examples</a>
+              <a href="/pricing">Free</a>
               <a href="/#faq">FAQ</a>
             </nav>
           </header>
@@ -97,7 +96,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="footer-inner">
               <div className="footer-brand">
                 <ShieldCheck size={18} aria-hidden="true" />
-                <span>Private browser-first interview practice.</span>
+                <span>Free English interview prep for non-native speakers.</span>
               </div>
               <nav className="footer-links" aria-label="Footer navigation">
                 {routes.slice(1).map((route) => (

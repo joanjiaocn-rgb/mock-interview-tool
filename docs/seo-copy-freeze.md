@@ -1,26 +1,26 @@
 # SEO Copy Freeze
 
 ## Home Page
-- Title: Mock Interview Tool | Practice Interviews With Timed Feedback
-- Meta description: Practice realistic 5-10 question mock interviews with role-based prompts, timed rounds, structured notes, scoring rubrics, and a downloadable prep report.
-- H1: Mock Interview Tool
-- Primary CTA: Start practice
-- Secondary CTA: View rubric
+- Title: Interview English Coach | Free English Interview Prep
+- Meta description: Free English behavioral interview prep for non-native speakers. Paste a job description and resume to generate likely questions, Chinese strategy, STAR outlines, English answer drafts, and a cheat sheet.
+- H1: Interview English Coach
+- Primary CTA: Try it free
+- Secondary CTA: View examples
 
 ## Target Query Groups
-- mock interview tool
-- interview practice tool
-- mock interview questions
-- timed interview practice
-- interview answer rubric
-- AI mock interview generator
+- AI English interview coach
+- English interview practice for Chinese speakers
+- English behavioral interview prep
+- STAR interview answer builder
+- English interview answer examples
+- interview cheat sheet
 
 ## Required Sections
 - Hero with product identity and direct value.
 - Interactive practice workspace.
 - Product capability proof strip.
-- Rubric explanation.
-- Pricing scope.
+- Chinese strategy and English answer explanation.
+- Free v0 pricing scope.
 - FAQ with privacy and outcome limitations.
 
 ## Compliance Language
@@ -33,7 +33,9 @@ Avoid:
 
 Use:
 - practice aid
-- local-first v0
-- manual rubric
-- report export
+- free v0
+- browser-side preparation
+- Chinese strategy
+- STAR outline
+- cheat sheet export
 - not an employment guarantee

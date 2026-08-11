@@ -1,12 +1,16 @@
-# Mock Interview Tool
+# Interview English Coach
 
-Mock Interview Tool is a browser-based interview practice workspace for candidates preparing behavioral, product, technical, case, and leadership interviews.
+Interview English Coach is a free English behavioral interview preparation tool for Chinese speakers, international students, and other non-native English speakers.
 
 Core pages:
-- /: interactive mock interview generator, timer, notes, scoring rubric, and report export
+- /: main tool and product overview
+- /practice: JD-aware practice workspace with Chinese strategy, STAR outlines, English drafts, scoring, notes, and cheat sheet export
+- /answer-builder: STAR answer builder reference
+- /examples: English answer examples with Chinese strategy notes
+- /pricing: current free v0 scope
 - /privacy: privacy policy
 - /terms: terms of use
 - /about: product context
 - /contact: support contact
 
-The tool currently runs locally in the browser and does not submit answers to a server.
+The current v0 does not require payment, accounts, video recording, saved sessions, or production resume storage.
