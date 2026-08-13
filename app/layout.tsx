@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import { Mail, ShieldCheck } from "lucide-react";
+import { ArrowRight, Mail, ShieldCheck } from "lucide-react";
 import "./globals.css";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics";
 import { routes, site, siteIds } from "@/lib/site";
@@ -84,12 +84,21 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
               <span>{site.shortName}</span>
             </a>
             <nav className="nav-links" aria-label="Main navigation">
-              <a href="/practice">Practice</a>
               <a href="/answer-builder">Builder</a>
+              <a href="/how-to">How to use</a>
+              <a href="/practice">Practice</a>
               <a href="/examples">Examples</a>
               <a href="/pricing">Free</a>
-              <a href="/#faq">FAQ</a>
             </nav>
+            <div className="header-actions">
+              <a className="button secondary header-link" href="/how-to">
+                Learn the flow
+              </a>
+              <a className="button primary header-link" href="/practice">
+                Start free
+                <ArrowRight size={16} aria-hidden="true" />
+              </a>
+            </div>
           </header>
           {children}
           <footer className="footer">

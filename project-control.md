@@ -3,6 +3,7 @@
 ## Launch Card
 - Project: Interview English Coach
 - Target market: US / English
+- Production domain: https://mock-interview.space
 - Site type: free English behavioral interview prep tool with SEO landing page
 - Primary keyword line: English interview practice for Chinese speakers, STAR interview answer builder, English behavioral interview prep
 - Current status: local v0 implementation
@@ -30,6 +31,6 @@
 
 ## Open Items
 - Replace placeholder support email.
-- Confirm production domain.
+- Connect and verify https://mock-interview.space after deployment.
 - Decide whether future features will use AI scoring, account storage, video, or human coaching.
 - Configure analytics only after privacy text is updated.

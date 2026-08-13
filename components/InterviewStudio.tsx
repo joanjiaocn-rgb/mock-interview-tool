@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDownToLine,
+  ClipboardCheck,
   CheckCircle2,
   ClipboardList,
   FileText,
+  HelpCircle,
   Languages,
   ListChecks,
   PencilLine,
@@ -19,6 +21,14 @@ type Role = "pm" | "data" | "software" | "design" | "marketing" | "leadership";
 type Level = "early" | "mid" | "senior";
 type QuestionCount = 8 | 10 | 12;
 type ScoreKey = "clarity" | "structure" | "specificity" | "englishPhrasing" | "confidence";
+
+type ReviewFeedback = {
+  summary: string;
+  strengths: string[];
+  improvements: string[];
+  rewriteMoves: string[];
+  scores: Record<ScoreKey, number>;
+};
 
 type GeneratedQuestion = {
   id: string;
@@ -130,6 +140,10 @@ const strongPhrases = [
   "What I would repeat next time is...",
 ];
 
+const weakPhrases = ["helped a lot", "was responsible for", "i just", "kind of", "sort of", "maybe", "i think"];
+const ownershipVerbs = ["led", "built", "created", "decided", "prioritized", "validated", "launched", "improved", "reduced", "designed", "analyzed", "shipped"];
+const resultWords = ["result", "impact", "increased", "reduced", "improved", "saved", "launched", "shipped", "learned", "measured", "converted"];
+
 const chineseThinkingLabel = "\u4e2d\u6587\u601d\u8def";
 const chineseStrategyTemplate = (resumeAnchor: string) =>
   `\u76f4\u63a5\u56de\u7b54 + STAR\u3002\u7528 "${resumeAnchor}" \u8bb2\u6e05\u4f60\u505a\u4e86\u4ec0\u4e48\u3001\u4e3a\u4ec0\u4e48\u8fd9\u6837\u505a\u3001\u7ed3\u679c\u662f\u4ec0\u4e48\u3002`;
@@ -159,14 +173,51 @@ function extractSignals(text: string, selectedRole: Role) {
   return roleKeywords[selectedRole].filter((keyword) => normalized.includes(keyword.toLowerCase())).slice(0, 6);
 }
 
-function makeEnglishDraft(roleLabel: string, resumeLine: string, jobSignal: string, index: number) {
-  const openers = [
-    "One example that fits this role is a project where I had to turn an unclear problem into a concrete plan.",
-    "A relevant example is when I worked on an initiative with unclear requirements and real delivery pressure.",
-    "I would answer this with a story where my main contribution was creating clarity and driving follow-through.",
-  ];
+function makeEnglishDraft(roleLabel: string, resumeLine: string, jobSignal: string, index: number, question: string) {
+  const anchor = resumeLine || "a recent project";
+  const lowerQuestion = question.toLowerCase();
 
-  return `${openers[index % openers.length]} The situation was related to ${resumeLine}. My task was to connect the business need with ${jobSignal}, decide what mattered most, and keep the team focused. I took action by clarifying the goal, aligning the people involved, and using evidence instead of assumptions. The result was a more reliable outcome, and the lesson I would bring into this ${roleLabel} role is to make tradeoffs explicit early.`;
+  if (/(disagree|conflict|critique|feedback)/.test(lowerQuestion)) {
+    if (/feedback/.test(lowerQuestion) || /critique/.test(lowerQuestion)) {
+      return `On ${anchor}, I received feedback that my communication around ${jobSignal} was too detailed and made the main decision hard to find. I asked for one concrete example, then changed my approach by leading with the recommendation, followed by the evidence and tradeoff. I tested the new format in the next review and asked the team whether the decision was easier to follow. The result was clearer alignment, and I now tailor the level of detail to the audience.`;
+    }
+
+    return `During ${anchor}, a teammate and I disagreed about how to handle ${jobSignal}. I first asked them to explain the risk they were protecting against, then shared the user or business constraint I was optimizing for. We compared the options against the same success criteria and agreed on a smaller test before committing. That helped us move forward without turning the disagreement into a personal debate. The lesson I took from it is to make the decision criteria explicit early.`;
+  }
+
+  if (/(did not work|first plan|mistake|failure|issue|risk|production)/.test(lowerQuestion)) {
+    if (/mistake/.test(lowerQuestion)) {
+      return `In ${anchor}, I underestimated the coordination needed for ${jobSignal} and started implementation before the owners and dependencies were fully clear. I noticed the risk when a handoff began to slip, so I paused, mapped the dependencies, and reset the milestones with the people involved. We recovered the work and added an earlier dependency review to the process. I would not repeat the original assumption, and I now surface coordination risks before treating a plan as ready.`;
+    }
+
+    return `In ${anchor}, our first approach to ${jobSignal} did not work as expected. The early signal showed that we were solving the wrong part of the problem, so I helped isolate the failure, explained the tradeoff, and proposed a narrower second approach. We validated it with a small test before expanding the work. The result was a more reliable path to delivery, and I learned to use early evidence to change direction instead of defending the original plan.`;
+  }
+
+  if (/(data|metric|customer|research|experiment)/.test(lowerQuestion)) {
+    return `While working on ${anchor}, I used data or customer feedback to investigate a decision related to ${jobSignal}. The first assumption was that the main issue was [assumption], but the evidence showed a different pattern. I compared the relevant segments, shared the finding with the team, and recommended a focused experiment rather than a broad change. We measured [metric] after the change and used the result to decide what to do next. This taught me to connect evidence to action, not just report the number.`;
+  }
+
+  if (/(influence|without formal authority|alignment|trust|team)/.test(lowerQuestion)) {
+    return `In ${anchor}, I needed to influence people who did not report to me around ${jobSignal}. I started by understanding what each person needed to protect, then reframed the proposal around a shared outcome. I used a short written plan with clear owners, risks, and a next decision instead of relying on repeated persuasion. The group agreed to move forward, and I followed up with the evidence from the first milestone. That experience showed me that influence comes from clarity, context, and consistent follow-through.`;
+  }
+
+  if (/(prioritize|deadline|tight)/.test(lowerQuestion)) {
+    return `On ${anchor}, I had a fixed deadline and more work than the team could complete, especially around ${jobSignal}. I separated must-have work from useful but deferrable work, made the tradeoffs visible, and confirmed the priority with the relevant stakeholders. I then protected the critical path and gave the team a simple update rhythm so new requests did not quietly expand the scope. We delivered the highest-value version on time, with [measurable result]. The key lesson was to prioritize outcomes, not just tasks.`;
+  }
+
+  if (/(complex|simply|communicate)/.test(lowerQuestion)) {
+    return `For ${anchor}, I had to explain work involving ${jobSignal} to people without the same technical context. I started with the decision they needed to make, used one concrete example, and left the implementation detail in a short follow-up. I checked understanding by asking them to react to the tradeoff rather than asking whether the explanation made sense. That helped the group make a faster decision and reduced follow-up questions. Since then, I communicate complex work from the audience's decision backward.`;
+  }
+
+  if (/(proud|personal contribution)/.test(lowerQuestion)) {
+    return `A project I am proud of is ${anchor}, where my personal contribution was to improve how the team handled ${jobSignal}. I clarified the problem, owned the most uncertain part of the work, and kept the key partners aligned as the solution changed. I also documented the decision so the team could maintain the result after launch. The outcome was [measurable result or user impact]. What I value most is that the work created a repeatable way for the team to make better decisions.`;
+  }
+
+  if (/(strongest working habit|manager)/.test(lowerQuestion)) {
+    return `My previous manager would probably say that my strongest habit is creating clarity around ${jobSignal}. In ${anchor}, I turned a broad request into a short list of decisions, owners, and next steps, then followed up when the assumptions changed. That habit helped the team move without waiting for perfect information and made risks easier to discuss early. I am still working on balancing this strength with leaving enough room for other people to shape the solution.`;
+  }
+
+  return `In ${anchor}, I faced a situation where ${jobSignal} mattered but the path forward was not obvious. I clarified the goal, identified the main constraint, and took ownership of the next two actions rather than waiting for a perfect plan. I kept the relevant people updated, used evidence to adjust the approach, and closed with [measurable result or lesson]. This example shows how I would bring practical judgment and follow-through to a ${roleLabel} role.`;
 }
 
 function generateQuestions(role: Role, level: Level, count: QuestionCount, jdText: string, resumeText: string): GeneratedQuestion[] {
@@ -197,7 +248,7 @@ function generateQuestions(role: Role, level: Level, count: QuestionCount, jdTex
         action: "2-3 actions you owned.",
         result: "Metric, decision, or lesson.",
       },
-      englishDraft: makeEnglishDraft(roleMeta.label, resumeAnchor, signal, index),
+      englishDraft: makeEnglishDraft(roleMeta.label, resumeAnchor, signal, index, question),
       phraseAlternatives: strongPhrases.slice(index % 3, index % 3 + 3),
     };
   });
@@ -208,7 +259,147 @@ function readinessScore(scores: Record<ScoreKey, number>) {
   return Math.round((total / (rubric.length * 5)) * 100);
 }
 
+function clampScore(score: number) {
+  return Math.max(1, Math.min(5, Math.round(score)));
+}
+
+function splitSentences(text: string) {
+  return text
+    .split(/[.!?]+/)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
+}
+
+function includesAny(text: string, words: string[]) {
+  const lower = text.toLowerCase();
+  return words.some((word) => lower.includes(word));
+}
+
+function countAny(text: string, words: string[]) {
+  const lower = text.toLowerCase();
+  return words.filter((word) => lower.includes(word)).length;
+}
+
+function questionFocus(question: string) {
+  const lower = question.toLowerCase();
+
+  if (/(disagree|conflict|critique|feedback)/.test(lower)) {
+    return {
+      label: "the disagreement",
+      improvement: "Make the disagreement visible: name the other perspective, then explain how you reached alignment.",
+    };
+  }
+  if (/(ambig|unclear|prioritize|deadline|tradeoff)/.test(lower)) {
+    return {
+      label: "the decision",
+      improvement: "Clarify the decision: state the constraint, the options you weighed, and why you chose this path.",
+    };
+  }
+  if (/(mistake|did not work|failure|issue|risk|production)/.test(lower)) {
+    return {
+      label: "the recovery",
+      improvement: "Spend one sentence on the recovery: what changed after the problem appeared and how you verified the fix.",
+    };
+  }
+  if (/(data|metric|customer|research|experiment)/.test(lower)) {
+    return {
+      label: "the evidence",
+      improvement: "Show the evidence chain: what signal you found, what it changed, and what happened after the decision.",
+    };
+  }
+  if (/(influence|without formal authority|alignment|trust|team)/.test(lower)) {
+    return {
+      label: "the collaboration",
+      improvement: "Show the collaboration move: who needed convincing, what you changed in your communication, and what they did next.",
+    };
+  }
+  return {
+    label: "your ownership",
+    improvement: "Make your ownership unmistakable: name the part you personally decided, built, or changed.",
+  };
+}
+
+function evaluateAnswer(answer: string, question: GeneratedQuestion, roleSignal: string): ReviewFeedback {
+  const trimmed = answer.replace(/\s+/g, " ").trim();
+  const lower = trimmed.toLowerCase();
+  const words = trimmed.split(/\s+/).filter(Boolean);
+  const sentences = splitSentences(trimmed);
+  const focus = questionFocus(question.question);
+  const hasMetric = /\b\d+(\.\d+)?\s?(%|x|k|m|hours?|days?|weeks?|users?|customers?|revenue|dollars?)?\b|\$/.test(lower);
+  const hasFirstPerson = /\b(i|my|me)\b/i.test(trimmed);
+  const hasResult = includesAny(lower, resultWords);
+  const ownershipCount = countAny(lower, ownershipVerbs);
+  const hasOwnership = ownershipCount > 0;
+  const hasStarWords = ["situation", "task", "action", "result"].filter((word) => lower.includes(word)).length;
+  const hasWeakPhrase = weakPhrases.some((phrase) => lower.includes(phrase));
+  const hasContext = includesAny(lower, ["when", "during", "after", "project", "team", "customer", "launch", "production", "deadline"]);
+  const hasChallenge = includesAny(lower, ["problem", "issue", "risk", "constraint", "conflict", "unclear", "disagree", "tradeoff", "failure"]);
+  const hasReflection = includesAny(lower, ["learned", "lesson", "next time", "would repeat", "changed how", "takeaway"]);
+  const genericOpening = /^(one example|a relevant example|i would answer|in my experience)\b/i.test(trimmed);
+  const hasQuestionSignal = roleSignal
+    .split(/\s+|\/|,|and/)
+    .filter((word) => word.length > 5)
+    .some((word) => lower.includes(word.toLowerCase()));
+
+  const clarity = clampScore(
+    2 +
+      (words.length >= 55 ? 1 : 0) +
+      (words.length >= 90 && words.length <= 190 ? 1 : 0) +
+      (sentences.length >= 3 && sentences.length <= 8 ? 1 : 0) -
+      (words.length > 240 ? 1 : 0),
+  );
+  const structure = clampScore(2 + (hasFirstPerson ? 1 : 0) + (hasResult ? 1 : 0) + (hasStarWords >= 2 ? 1 : 0));
+  const specificity = clampScore(1 + (hasMetric ? 2 : 0) + (hasQuestionSignal ? 1 : 0) + (words.length >= 80 ? 1 : 0));
+  const englishPhrasing = clampScore(3 + (sentences.length >= 3 ? 1 : 0) + (hasWeakPhrase ? -1 : 0) + (words.length > 220 ? -1 : 0));
+  const confidence = clampScore(2 + (hasFirstPerson ? 1 : 0) + (hasOwnership ? 1 : 0) + (hasWeakPhrase ? -1 : 0) + (hasResult ? 1 : 0));
+  const scores = { clarity, structure, specificity, englishPhrasing, confidence };
+  const score = readinessScore(scores);
+
+  const strengths = [
+    hasFirstPerson ? "Uses first-person ownership, which helps the answer sound personal." : "",
+    hasOwnership ? "Includes action verbs that show what you personally did." : "",
+    hasResult ? "Points toward an outcome instead of stopping at the process." : "",
+    hasReflection ? "Ends with a lesson or repeatable takeaway." : "",
+    hasQuestionSignal ? "Connects the answer back to the role signal." : "",
+  ].filter(Boolean);
+
+  const improvements = [
+    genericOpening ? `Open with ${focus.label} instead of a template sentence.` : "",
+    !hasContext ? "Set the scene before the action: say who or what was affected and what was at stake." : "",
+    !hasChallenge ? focus.improvement : "",
+    ownershipCount < 2 ? "Add a second concrete action so the answer shows your judgment, not just your involvement." : "",
+    !hasMetric ? "Add a number, timeline, scope, or observable result to make the story verifiable." : "",
+    !hasResult ? "Close with the outcome: what improved, changed, or was decided because of your work." : "",
+    !hasReflection ? "Finish with one reusable lesson or what you would repeat next time." : "",
+    !hasFirstPerson ? "Use more I-statements so the interviewer can see your personal contribution." : "",
+    hasWeakPhrase ? "Remove soft phrases like \"just\", \"kind of\", or \"helped a lot\"." : "",
+    words.length < 70 ? "Expand the answer with one concrete action and one outcome." : "",
+    words.length > 220 ? "Shorten the answer so it can be spoken in about 90 seconds." : "",
+  ].filter(Boolean).filter((item, index, all) => all.indexOf(item) === index);
+
+  const rewriteMoves = [
+    genericOpening ? `Start with: In [project], the challenge was...` : "Keep the opening specific and brief.",
+    ownershipCount < 2 ? "Add: My specific responsibility was..." : "Keep the strongest I-action in the middle.",
+    !hasMetric ? "Add: The measurable result was..." : !hasReflection ? "Add: What I learned from this was..." : "Use the lesson as your final sentence.",
+  ].filter((item, index, all) => all.indexOf(item) === index);
+
+  return {
+    summary: score >= 75
+      ? `Strong draft. Keep the ${focus.label} clear, then rehearse it aloud.`
+      : score >= 58
+        ? `Useful start. Strengthen ${focus.label} and give the story a cleaner ending.`
+        : `Good raw material. Build the story around ${focus.label} before polishing English.`,
+    strengths: strengths.length ? strengths.slice(0, 3) : ["You have a starting answer to refine."],
+    improvements: improvements.length
+      ? improvements.slice(0, 4)
+      : ["Your structure is working. Try a more vivid detail or a shorter opening."],
+    rewriteMoves,
+    scores,
+  };
+}
+
 export function InterviewStudio() {
+  const [isReady, setIsReady] = useState(false);
   const [role, setRole] = useState<Role>("pm");
   const [level, setLevel] = useState<Level>("mid");
   const [questionCount, setQuestionCount] = useState<QuestionCount>(10);
@@ -217,6 +408,7 @@ export function InterviewStudio() {
   const [resumeName, setResumeName] = useState("");
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
+  const [feedbacks, setFeedbacks] = useState<Array<ReviewFeedback | undefined>>([]);
   const [notes, setNotes] = useState("");
   const [scores, setScores] = useState<Record<ScoreKey, number>>({
     clarity: 3,
@@ -230,11 +422,17 @@ export function InterviewStudio() {
   const questions = useMemo(() => generateQuestions(role, level, questionCount, jdText, resumeText), [role, level, questionCount, jdText, resumeText]);
   const currentQuestion = questions[activeQuestion] ?? questions[0];
   const activeAnswer = answers[activeQuestion] ?? "";
-  const score = readinessScore(scores);
+  const activeFeedback = feedbacks[activeQuestion];
+  const canReviewAnswer = activeAnswer.trim().length >= 40;
+  const score = activeFeedback ? readinessScore(activeFeedback.scores) : null;
   const roleMeta = roles.find((item) => item.id === role) ?? roles[0];
   const jdSignals = extractSignals(jdText, role);
   const resumeSignals = extractSignals(resumeText, role);
   const answeredCount = answers.filter((answer) => answer.trim()).length;
+
+  useEffect(() => {
+    setIsReady(true);
+  }, []);
 
   const reportAnalyticsEvent = (eventName: string, data: Record<string, string | number | boolean> = {}) => {
     trackAnalyticsEvent(eventName, {
@@ -250,6 +448,27 @@ export function InterviewStudio() {
       const next = [...current];
       next[activeQuestion] = value;
       return next;
+    });
+    setFeedbacks((current) => {
+      const next = [...current];
+      next[activeQuestion] = undefined;
+      return next;
+    });
+  };
+
+  const reviewAnswer = () => {
+    if (!canReviewAnswer) return;
+
+    const feedback = evaluateAnswer(activeAnswer, currentQuestion, roleMeta.interviewSignal);
+    setScores(feedback.scores);
+    setFeedbacks((current) => {
+      const next = [...current];
+      next[activeQuestion] = feedback;
+      return next;
+    });
+    reportAnalyticsEvent("answer_feedback_generated", {
+      answer_chars: activeAnswer.length,
+      readiness_score: readinessScore(feedback.scores),
     });
   };
 
@@ -274,6 +493,7 @@ export function InterviewStudio() {
   const resetWorkspace = () => {
     setActiveQuestion(0);
     setAnswers([]);
+    setFeedbacks([]);
     setNotes("");
     setScores({
       clarity: 3,
@@ -288,11 +508,29 @@ export function InterviewStudio() {
   const downloadCheatSheet = () => {
     reportAnalyticsEvent("cheat_sheet_export");
 
+    // Prefer the live textarea value so an immediate export never misses the latest keystroke.
+    const exportAnswers = [...answers];
+    const liveAnswer = answerRef.current?.value.trim();
+    if (liveAnswer) {
+      exportAnswers[activeQuestion] = liveAnswer;
+    }
+
+    const practicedAnswers = questions.flatMap((question, index) => {
+      const answer = exportAnswers[index]?.trim();
+      return answer
+        ? [
+            `${index + 1}. ${question.question}`,
+            `Your answer: ${answer}`,
+            "",
+          ]
+        : [];
+    });
+
     const report = [
       "Interview English Coach - Cheat Sheet",
       `Role: ${roleMeta.label}`,
       `Level: ${levels.find((item) => item.id === level)?.label}`,
-      `Readiness score: ${score}/100 - ${scoreLabel(score)}`,
+      `Readiness score: ${score ?? "Not reviewed"}${score ? ` - ${scoreLabel(score)}` : ""}`,
       "",
       "Top questions:",
       ...questions.slice(0, 6).map((question, index) => `${index + 1}. ${question.question}`),
@@ -303,13 +541,10 @@ export function InterviewStudio() {
       "English phrases to reuse:",
       ...strongPhrases.map((phrase) => `- ${phrase}`),
       "",
-      "Answers:",
-      ...questions.flatMap((question, index) => [
-        `${index + 1}. ${question.question}`,
-        answers[index]?.trim() ? answers[index].trim() : question.englishDraft,
-        "",
-      ]),
-      "Coach notes:",
+      "Practiced answers:",
+      ...(practicedAnswers.length ? practicedAnswers : ["[No practiced answers yet]"]),
+      "",
+      "Your review notes:",
       notes.trim() || "[No notes recorded]",
     ].join("\n");
 
@@ -323,19 +558,25 @@ export function InterviewStudio() {
   };
 
   return (
-    <section className="studio-band" id="studio" aria-label="English interview preparation studio">
+    <section
+      aria-busy={!isReady}
+      aria-label="English interview preparation studio"
+      className="studio-band"
+      data-ready={isReady}
+      id="studio"
+    >
       <div className="studio-header">
         <div>
           <p className="section-kicker">
             <Languages size={16} aria-hidden="true" />
-            Free behavioral interview prep
+            Practice workspace
           </p>
-          <h2>Paste the JD and your resume. Get questions, Chinese strategy, English drafts, and a cheat sheet.</h2>
+          <h2>Set up the role, then work through one answer at a time.</h2>
         </div>
-        <div className="timer-block" aria-live="polite">
-          <CheckCircle2 size={18} aria-hidden="true" />
-          <span>Free practice</span>
-        </div>
+        <a className="studio-help-link" href="/how-to">
+          <HelpCircle size={17} aria-hidden="true" />
+          How to use
+        </a>
       </div>
 
       <div className="studio-grid">
@@ -506,28 +747,8 @@ export function InterviewStudio() {
             ))}
           </div>
 
-          <div className="coach-card-grid">
-            <article>
-              <p>Why they ask</p>
-              <span>{currentQuestion.reason}</span>
-            </article>
-            <article>
-              <p>{chineseThinkingLabel}</p>
-              <span>{currentQuestion.chineseStrategy}</span>
-            </article>
-          </div>
-
-          <div className="star-grid" aria-label="STAR answer outline">
-            {Object.entries(currentQuestion.starOutline).map(([key, value]) => (
-              <article key={key}>
-                <strong>{key}</strong>
-                <span>{value}</span>
-              </article>
-            ))}
-          </div>
-
           <label className="answer-label" htmlFor="draft">
-            English draft to adapt
+            Example answer to adapt 示例答案（请替换成你的经历）
           </label>
           <textarea className="answer-box compact" id="draft" readOnly value={currentQuestion.englishDraft} />
 
@@ -543,6 +764,57 @@ export function InterviewStudio() {
             value={activeAnswer}
           />
 
+          <div className="answer-feedback-actions">
+            <button className="feedback-button" disabled={!canReviewAnswer} onClick={reviewAnswer} type="button">
+              <ClipboardCheck size={17} aria-hidden="true" />
+              Get feedback
+            </button>
+            <span>{canReviewAnswer ? "Score this answer and get revision suggestions." : "Write at least 40 characters to unlock feedback."}</span>
+          </div>
+
+          <section className={activeFeedback ? "feedback-card answer-feedback-card" : "feedback-card answer-feedback-card empty"} aria-live="polite">
+            <div className="feedback-card-heading">
+              <div>
+                <p className="feedback-eyebrow">Answer feedback</p>
+                <h3>{activeFeedback ? "What to keep and improve" : "Feedback will appear here"}</h3>
+              </div>
+              {score ? <strong className="feedback-score">{score}/100</strong> : null}
+            </div>
+            {activeFeedback ? (
+              <>
+                <p className="feedback-summary">{activeFeedback.summary}</p>
+                <div className="feedback-columns">
+                  <div>
+                    <strong>Working</strong>
+                    <ul>
+                      {activeFeedback.strengths.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <strong>Improve next</strong>
+                    <ul>
+                      {activeFeedback.improvements.map((item) => (
+                        <li key={item}>{item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="rewrite-moves">
+                  <strong>Try these edits</strong>
+                  <div>
+                    {activeFeedback.rewriteMoves.map((move) => (
+                      <span key={move}>{move}</span>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <p className="feedback-empty-copy">After you submit an answer, you will get a score, specific strengths, and the next edits to make.</p>
+            )}
+          </section>
+
           <div className="coach-strip" aria-label="Natural English phrase alternatives">
             {currentQuestion.phraseAlternatives.map((phrase) => (
               <span key={phrase}>
@@ -553,16 +825,46 @@ export function InterviewStudio() {
           </div>
         </div>
 
-        <aside className="score-panel" aria-label="Answer review and cheat sheet">
+        <aside className="score-panel" aria-label="Answer method and score">
+          <div className="method-panel">
+            <div className="method-panel-heading">
+              <span>Answer method</span>
+              <a href="/how-to">Full guide</a>
+            </div>
+
+            <div className="method-section">
+              <p>Why they ask</p>
+              <span>{currentQuestion.reason}</span>
+            </div>
+
+            <div className="method-section method-section-strategy">
+              <p>{chineseThinkingLabel}</p>
+              <span>{currentQuestion.chineseStrategy}</span>
+            </div>
+
+            <div className="method-star" aria-label="STAR answer outline">
+              {Object.entries(currentQuestion.starOutline).map(([key, value], index) => (
+                <div key={key}>
+                  <b>{index + 1}</b>
+                  <span>
+                    <strong>{key}</strong>
+                    <small>{value}</small>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+
           <div className="readiness-meter">
             <div>
               <p>Readiness</p>
-              <strong>{score}/100</strong>
+              <strong>{score ? `${score}/100` : "—"}</strong>
             </div>
-            <span>{scoreLabel(score)}</span>
+            <span>{score ? scoreLabel(score) : "Write an answer to get feedback"}</span>
           </div>
 
           <div className="rubric-stack">
+            <p className="rubric-heading">Self-review (optional)</p>
             {rubric.map((item) => (
               <label className="rubric-row" key={item.id}>
                 <span>
@@ -588,13 +890,13 @@ export function InterviewStudio() {
           </div>
 
           <label className="answer-label" htmlFor="notes">
-            Review notes
+            Your review notes (optional)
           </label>
           <textarea
             className="notes-box"
             id="notes"
             onChange={(event) => setNotes(event.target.value)}
-            placeholder="Write gaps, missing metrics, better verbs, and follow-up questions."
+            placeholder="For your next attempt: one gap, metric, or follow-up question."
             value={notes}
           />
 

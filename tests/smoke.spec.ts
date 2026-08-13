@@ -1,12 +1,15 @@
 import { expect, test } from "@playwright/test";
+import { readFile } from "node:fs/promises";
 
 test("home page exposes the English interview prep workflow", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Turn your resume into English interview answers.", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Practice English interview answers.", level: 1 })).toBeVisible();
   await expect(page.getByText("JD-aware behavioral questions")).toBeVisible();
-  await page.getByRole("link", { name: /try it free/i }).click();
-  await expect(page.getByRole("heading", { name: /paste the JD and your resume/i })).toBeVisible();
+  await page.getByRole("link", { name: /start free practice/i }).first().click();
+  await expect(page.getByRole("heading", { name: /build one interview answer at a time/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /set up the role, then work through one answer/i })).toBeVisible();
+  await expect(page.getByLabel("English interview preparation studio")).toHaveAttribute("data-ready", "true");
   await expect(page.getByText(/Question 1 of 10/i)).toBeVisible();
 
   await page.getByLabel("Target role").selectOption("software");
@@ -21,18 +24,49 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
   await page.getByRole("button", { name: /create practice set/i }).click();
   await expect(page.getByText(/Using .* signals from your inputs/i)).toBeVisible();
   await expect(page.getByLabel("English interview preparation studio").getByText("\u4e2d\u6587\u601d\u8def")).toBeVisible();
+  await expect(page.getByText("Answer method")).toBeVisible();
+  await expect(page.getByLabel(/Example answer to adapt/)).toBeVisible();
+  const firstDraft = await page.getByLabel(/Example answer to adapt/).inputValue();
+  await page.getByRole("tab", { name: "2", exact: true }).click();
+  const secondDraft = await page.getByLabel(/Example answer to adapt/).inputValue();
+  expect(secondDraft).not.toBe(firstDraft);
 
-  await page.getByLabel("Your practiced answer").fill("I would start with requirements, map failure modes, and make retries idempotent.");
-  await page.getByLabel("Review notes").fill("Needs a concrete production example and clearer metric.");
+  const practicedAnswer = "I led a React dashboard reliability project where API errors were creating support escalations. My task was to identify the failure pattern, align product and engineering on the tradeoff, and improve the experience without delaying launch. I mapped the failure modes, added retry behavior, wrote TypeScript checks, and led the incident review. The result was a 28% API latency improvement and fewer repeat escalations.";
+  await page.getByLabel("Your practiced answer").fill(practicedAnswer);
+  await page.getByRole("button", { name: /^Get feedback$/ }).first().click();
+  await expect(page.getByRole("heading", { name: "What to keep and improve" })).toBeVisible();
+  await expect(page.getByText("Try these edits")).toBeVisible();
+  await expect(page.getByLabel("English interview preparation studio").getByText(/Readiness/i)).toBeVisible();
+  const reviewNotes = page.getByLabel("Your review notes (optional)");
+  await expect(reviewNotes).toHaveValue("");
+  await reviewNotes.fill("Needs a concrete production example and clearer metric.");
   await expect(page.getByText("1 practiced")).toBeVisible();
-  await expect(page.getByRole("button", { name: /export cheat sheet/i })).toBeVisible();
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export", exact: true }).click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  const report = await readFile(downloadPath!, "utf8");
+  expect(report).toContain(`Your answer: ${practicedAnswer}`);
+  expect(report).not.toContain("One example that fits this role");
 });
 
 test("mobile layout avoids horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
-  await page.goto("/");
+  await page.goto("/practice");
 
+  await expect(page.getByLabel("English interview preparation studio")).toHaveAttribute("data-ready", "true");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
   await expect(page.getByLabel("Target role")).toBeVisible();
+});
+
+test("how-to page explains the first practice round", async ({ page }) => {
+  await page.goto("/how-to");
+
+  await expect(page.getByRole("heading", { name: "From job description to a practiced answer.", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Add the role" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Practice one answer" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /same four moves/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /open practice/i })).toBeVisible();
 });

@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
-import { ArrowRight, BadgeCheck, CheckCircle2, Languages, Mic, Video, XCircle } from "lucide-react";
-import { InterviewStudio } from "@/components/InterviewStudio";
+import { ArrowRight, BadgeCheck, CheckCircle2, ClipboardList, Languages, Target } from "lucide-react";
 import { site, siteIds } from "@/lib/site";
 
 export const metadata: Metadata = {
@@ -34,7 +33,7 @@ const pageSchema = {
           name: "Is Interview English Coach free?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "The current v0 is free and does not require payment, checkout, or an account.",
+            text: "The current v0 is free and does not require payment or an account.",
           },
         },
         {
@@ -42,7 +41,7 @@ const pageSchema = {
           name: "Should this product include voice or video interviews?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Voice practice is a good second-stage feature. Video interviews are not recommended for the first version because they add privacy and implementation complexity before the core answer workflow is proven.",
+            text: "Voice practice is a good next-stage feature. Video is better left for later because it adds privacy and product complexity before the core answer workflow is proven.",
           },
         },
       ],
@@ -50,59 +49,92 @@ const pageSchema = {
   ],
 };
 
-const steps = [
-  { title: "Paste JD", body: "Add the role description so questions match the interview." },
-  { title: "Paste resume", body: "Add bullets or stories you want to turn into answers." },
-  { title: "Practice", body: "Get questions, STAR outlines, English drafts, and a cheat sheet." },
+const featureRows = [
+  "JD-aware behavioral questions",
+  "Chinese method before English draft",
+  "STAR structure and review notes",
 ];
 
-const features = [
-  "JD-aware behavioral questions",
-  "Chinese strategy before English rewriting",
-  "STAR answer outlines",
-  "Exportable interview cheat sheet",
+const steps = [
+  { title: "Paste a JD", body: "Start with one real role description so the questions feel relevant." },
+  { title: "Paste your resume", body: "Use bullets, project notes, or a story bank with concrete details." },
+  { title: "Practice and refine", body: "Read the question, follow the method, and rewrite the answer in your own words." },
 ];
 
 export default function HomePage() {
   return (
     <main className="main">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }} />
-      <section className="simple-hero" aria-label="Interview English Coach">
-        <div className="simple-hero-copy">
+
+      <section className="hero-split" aria-label="Interview English Coach">
+        <div className="simple-hero-copy hero-lead">
           <p className="section-kicker">
-            <Languages size={16} aria-hidden="true" />
-            Free English behavioral interview prep
+            <BadgeCheck size={16} aria-hidden="true" />
+            Free v0 for behavioral interviews
           </p>
-          <h1>Turn your resume into English interview answers.</h1>
+          <h1>Practice English interview answers.</h1>
           <p className="hero-copy">
-            Paste a job description and your resume. Get likely behavioral interview questions, {"\u4e2d\u6587\u601d\u8def"}, STAR structure, polished English drafts, and a last-minute cheat sheet.
+            Paste a JD and your resume, then get likely questions, a clear answer method, and an English draft you can adapt.
           </p>
           <div className="hero-actions">
-            <a className="button primary" href="#studio">
-              Try it free
+            <a className="button primary" href="/practice">
+              Start free practice
               <ArrowRight size={17} aria-hidden="true" />
             </a>
-            <a className="button secondary" href="/examples">
-              See examples
+            <a className="button secondary" href="/how-to">
+              How to use
             </a>
+          </div>
+          <div className="hero-proof">
+            <span>
+              <CheckCircle2 size={16} aria-hidden="true" />
+              No account
+            </span>
+            <span>
+              <CheckCircle2 size={16} aria-hidden="true" />
+              No payment
+            </span>
+            <span>
+              <CheckCircle2 size={16} aria-hidden="true" />
+              Built for non-native speakers
+            </span>
           </div>
         </div>
 
-        <div className="quick-start-panel" aria-label="How it works">
-          {steps.map((step, index) => (
-            <article key={step.title}>
-              <span>{index + 1}</span>
-              <div>
-                <h2>{step.title}</h2>
-                <p>{step.body}</p>
-              </div>
-            </article>
-          ))}
+        <div className="hero-visual hero-board" aria-label="Practice preview">
+          <div className="hero-board-back hero-board-back-one" />
+          <div className="hero-board-back hero-board-back-two" />
+          <article className="hero-board-main">
+            <div className="hero-board-topline">
+              <span>Practice mode</span>
+              <b>Question 1 / 10</b>
+            </div>
+            <h2>Tell me about a time you handled ambiguity and still delivered.</h2>
+            <p className="hero-board-copy">Use the method, then rewrite the draft with your own metrics and story.</p>
+            <div className="hero-board-tags">
+              <span>JD aware</span>
+              <span>Chinese method</span>
+              <span>STAR</span>
+              <span>English draft</span>
+            </div>
+            <div className="hero-board-callout hero-board-callout-top">
+              <Target size={16} aria-hidden="true" />
+              Focus on one story
+            </div>
+            <div className="hero-board-callout hero-board-callout-right">
+              <ClipboardList size={16} aria-hidden="true" />
+              Create practice set
+            </div>
+            <div className="hero-board-callout hero-board-callout-bottom">
+              <Languages size={16} aria-hidden="true" />
+              Rewrite in your own English
+            </div>
+          </article>
         </div>
       </section>
 
       <section className="feature-strip" aria-label="Core features">
-        {features.map((feature) => (
+        {featureRows.map((feature) => (
           <div key={feature}>
             <CheckCircle2 size={17} aria-hidden="true" />
             <span>{feature}</span>
@@ -110,60 +142,24 @@ export default function HomePage() {
         ))}
       </section>
 
-      <InterviewStudio />
-
-      <section className="content-band voice-video-band" id="voice-video">
-        <div>
+      <section className="content-band how-preview">
+        <div className="content-heading">
           <p className="section-kicker">
-            <Mic size={16} aria-hidden="true" />
-            Voice and video
+            <ClipboardList size={16} aria-hidden="true" />
+            First-time flow
           </p>
-          <h2>Voice later. Video not yet.</h2>
-          <p>
-            The first job is to prove users want JD-aware questions and better English answers. Voice practice is useful after that because it tests delivery, pace, and confidence. Video adds privacy, storage, permission, and UX complexity before the core workflow is validated.
-          </p>
+          <h2>Three steps, then practice.</h2>
         </div>
-        <div className="decision-grid">
-          <article>
-            <Mic size={18} aria-hidden="true" />
-            <h3>Phase 2: voice</h3>
-            <p>Record or transcribe spoken answers, then compare spoken English with the polished draft.</p>
-          </article>
-          <article>
-            <Video size={18} aria-hidden="true" />
-            <h3>Later: video</h3>
-            <p>Add only if users ask for camera rehearsal after the text and voice workflow works.</p>
-          </article>
-          <article>
-            <XCircle size={18} aria-hidden="true" />
-            <h3>Not v0</h3>
-            <p>No video upload, no saved recordings, no interview outcome guarantee.</p>
-          </article>
-        </div>
-      </section>
-
-      <section className="content-band faq-band" id="faq">
-        <p className="section-kicker">
-          <BadgeCheck size={16} aria-hidden="true" />
-          FAQ
-        </p>
-        <div className="faq-list">
-          <article>
-            <h2>Who is this for?</h2>
-            <p>Chinese speakers, international students, and other non-native English speakers preparing for English behavioral interviews.</p>
-          </article>
-          <article>
-            <h2>Is it free?</h2>
-            <p>Yes. The current v0 has no payment, subscription, or account requirement.</p>
-          </article>
-          <article>
-            <h2>Is my resume stored?</h2>
-            <p>This v0 runs as a browser-side prep tool. Avoid entering highly sensitive personal or employer-confidential details.</p>
-          </article>
-          <article>
-            <h2>Does it guarantee an offer?</h2>
-            <p>No. It is a practice and writing aid. It cannot guarantee interviews, offers, or hiring outcomes.</p>
-          </article>
+        <div className="quick-start-panel compact">
+          {steps.map((step, index) => (
+            <article key={step.title}>
+              <span>{index + 1}</span>
+              <div>
+                <h3>{step.title}</h3>
+                <p>{step.body}</p>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>
