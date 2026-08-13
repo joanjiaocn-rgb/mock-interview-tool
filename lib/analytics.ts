@@ -1,4 +1,4 @@
-export const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_ID?.trim() || "G-4NJ03RRLKD";
+export const ga4MeasurementId = process.env.NEXT_PUBLIC_GA4_ID?.trim() || "G-7D52S17CK7";
 
 export const analyticsEnabled = Boolean(ga4MeasurementId);
 

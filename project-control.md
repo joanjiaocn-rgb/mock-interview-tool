@@ -21,7 +21,7 @@
 - 09 QA: pending after build and browser smoke.
 - 10 SEO: local technical SEO included; GSC/Bing submission blocked until production URL ownership.
 - 11 Ops: blocked until QA_GO, SEO_GO, Compliance_GO, Owner Review.
-- 12 Data Review: template only until analytics and launch data exist.
+- 12 Data Review: GA4 configured; reporting review starts after launch data exists.
 
 ## Gates
 - PM Gate: v0 solves the core user task of turning a JD and resume into likely behavioral questions, Chinese strategy, English answer drafts, and a cheat sheet.
@@ -33,4 +33,4 @@
 - Replace placeholder support email.
 - Connect and verify https://mock-interview.space after deployment.
 - Decide whether future features will use AI scoring, account storage, video, or human coaching.
-- Configure analytics only after privacy text is updated.
+- Verify GA4 realtime events after deployment.
