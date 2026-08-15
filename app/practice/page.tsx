@@ -4,8 +4,10 @@ import { InterviewStudio } from "@/components/InterviewStudio";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Practice",
+  title: "Practice English Interview Answers",
   description: "Free English behavioral interview practice with JD-aware questions, Chinese strategy, STAR outlines, and English answer drafts.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/practice`,
   },

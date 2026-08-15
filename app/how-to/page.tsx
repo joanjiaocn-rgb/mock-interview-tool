@@ -5,6 +5,8 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "How to Use",
   description: "Learn the three-step Interview English Coach workflow: add a job description, add your experience, then practice and refine each answer.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/how-to`,
   },

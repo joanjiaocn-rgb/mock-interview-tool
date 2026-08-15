@@ -3,7 +3,8 @@ export const site = {
   shortName: "EnglishCoach",
   url: "https://mock-interview.space",
   description:
-    "Free English behavioral interview prep for non-native speakers. Paste a job description and resume to generate likely questions, Chinese strategy, STAR outlines, English answer drafts, and a cheat sheet.",
+    "Free English interview prep for non-native speakers. Paste a JD and resume to get likely questions, STAR outlines, and answer drafts.",
+  keywords: ["English interview practice", "behavioral interview prep", "STAR interview answer builder", "Chinese speakers"],
   authorName: "Interview English Coach",
   supportEmail: "support@example.com",
   publishedAt: "2026-08-09",

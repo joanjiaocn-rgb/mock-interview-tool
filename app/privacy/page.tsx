@@ -4,6 +4,8 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Privacy Policy",
   description: "Privacy policy for Interview English Coach.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/privacy`,
   },
@@ -14,7 +16,7 @@ export default function PrivacyPage() {
     <main className="main legal-page">
       <p className="section-kicker">Privacy</p>
       <h1>Privacy Policy</h1>
-      <p>Last updated: August 14, 2026.</p>
+      <p>Last updated: August 15, 2026.</p>
       <p>
         Interview English Coach is currently a free browser-side preparation tool. Job descriptions, resume text, experience notes, answer drafts, scoring changes, and exported cheat sheets are processed in your browser during the session.
       </p>

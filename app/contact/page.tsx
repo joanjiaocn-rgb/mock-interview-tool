@@ -4,6 +4,8 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Contact Interview English Coach.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/contact`,
   },

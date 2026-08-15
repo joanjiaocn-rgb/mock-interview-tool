@@ -4,6 +4,8 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Terms of Use",
   description: "Terms of use for Interview English Coach.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/terms`,
   },
@@ -14,7 +16,7 @@ export default function TermsPage() {
     <main className="main legal-page">
       <p className="section-kicker">Terms</p>
       <h1>Terms of Use</h1>
-      <p>Last updated: August 11, 2026.</p>
+      <p>Last updated: August 15, 2026.</p>
       <h2>Use of the Tool</h2>
       <p>
         Interview English Coach provides English behavioral interview questions, Chinese answer strategy, STAR outlines, draft answers, notes, scoring rubrics, and cheat sheet export. It is an educational practice tool and does not guarantee job offers, interview outcomes, or professional career advice.

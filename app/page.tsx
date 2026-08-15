@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
-import { ArrowRight, BadgeCheck, CheckCircle2, ClipboardList, Languages, Target } from "lucide-react";
+import { ArrowRight, BadgeCheck, BookOpen, CheckCircle2, ClipboardList, ExternalLink, Languages, Quote, Target } from "lucide-react";
 import { site, siteIds } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Interview English Coach | Free English Interview Prep",
+  title: "Free English Interview Practice",
   description: site.description,
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: site.url,
   },
@@ -22,6 +24,8 @@ const pageSchema = {
       inLanguage: "en-US",
       datePublished: site.publishedAt,
       dateModified: site.updatedAt,
+      author: { "@id": siteIds.organization },
+      publisher: { "@id": siteIds.organization },
       isPartOf: { "@id": siteIds.website },
     },
     {
@@ -48,6 +52,46 @@ const pageSchema = {
     },
   ],
 };
+
+const faqPreview = [
+  {
+    question: "Why does the tool start with one job description?",
+    answer: "The JD gives the question generator a real role signal, so the practice set feels closer to the interview you will actually face.",
+  },
+  {
+    question: "How much should I write before I start scoring answers?",
+    answer: "Enough to remember the story, not a full script. The draft should be a working reference, not text you need to memorize line by line.",
+  },
+  {
+    question: "Should I add voice or video practice first?",
+    answer: "Voice is the better next step because it improves pacing, confidence, and spoken English without adding the privacy cost of video.",
+  },
+  {
+    question: "What should I do after I get feedback?",
+    answer: "Rewrite the answer once, focus on one concrete improvement, and practice it aloud before moving to the next question.",
+  },
+];
+
+const methodSources = [
+  {
+    title: "MIT CAPD on STAR",
+    href: "https://capd.mit.edu/resources/the-star-method-for-behavioral-interviews/",
+    quote: "a useful acronym and an effective formula",
+    note: "We use the same four-part structure to keep answers specific and easy to scan.",
+  },
+  {
+    title: "Northwestern on STAR",
+    href: "https://www.northwestern.edu/careers/jobs-internships/interviewing/the-star-approach.html",
+    quote: "action should always be the longest part",
+    note: "That is why the practice view spends most of its space on what you personally did.",
+  },
+  {
+    title: "Harvard FAS on STAR drafting",
+    href: "https://careerservices.fas.harvard.edu/ai-interviews-and-offers/",
+    quote: "Type up your answers to behavioral questions in STAR format",
+    note: "This reinforces drafting answers before you rehearse and refine them.",
+  },
+];
 
 const featureRows = [
   "JD-aware behavioral questions",
@@ -140,6 +184,51 @@ export default function HomePage() {
             <span>{feature}</span>
           </div>
         ))}
+      </section>
+
+      <section className="content-band">
+        <div className="content-heading">
+          <p className="section-kicker">
+            <BookOpen size={16} aria-hidden="true" />
+            Why this workflow
+          </p>
+          <h2>What makes a behavioral answer easier to score?</h2>
+        </div>
+        <div className="faq-list">
+          {faqPreview.map((item) => (
+            <article key={item.question}>
+              <h2>{item.question}</h2>
+              <p>{item.answer}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="content-band">
+        <div className="content-heading">
+          <p className="section-kicker">
+            <Quote size={16} aria-hidden="true" />
+            Sources and method
+          </p>
+          <h2>Where did the interview structure come from?</h2>
+        </div>
+        <div className="faq-list">
+          {methodSources.map((source) => (
+            <article key={source.title}>
+              <h2>{source.title}</h2>
+              <p>
+                <Quote size={14} aria-hidden="true" /> {source.quote}
+              </p>
+              <p>{source.note}</p>
+              <p>
+                <a href={source.href} rel="noreferrer" target="_blank">
+                  Read the source
+                  <ExternalLink size={14} aria-hidden="true" />
+                </a>
+              </p>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="content-band how-preview">

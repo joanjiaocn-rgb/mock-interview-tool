@@ -4,6 +4,8 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Pricing",
   description: "Interview English Coach is free in the current v0 and does not include paid plans or checkout.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/pricing`,
   },

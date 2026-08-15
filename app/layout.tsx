@@ -14,15 +14,21 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "Interview English Coach | Free English Interview Prep",
+    default: "Free English Interview Practice | Interview English Coach",
     template: `%s | ${site.shortName}`,
   },
   description: site.description,
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.svg",
+  },
   alternates: {
     canonical: site.url,
   },
   openGraph: {
-    title: "Interview English Coach | Free English Interview Prep",
+    title: "Free English Interview Practice | Interview English Coach",
     description: site.description,
     url: site.url,
     type: "website",
@@ -31,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Interview English Coach | Free English Interview Prep",
+    title: "Free English Interview Practice | Interview English Coach",
     description: site.description,
   },
 };

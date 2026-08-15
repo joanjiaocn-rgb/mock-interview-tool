@@ -4,6 +4,8 @@ import { site } from "@/lib/site";
 export const metadata: Metadata = {
   title: "STAR Answer Builder",
   description: "Build clearer English behavioral interview answers with a simple STAR structure for non-native speakers.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/answer-builder`,
   },

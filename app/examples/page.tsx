@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Examples",
+  title: "English Interview Answer Examples",
   description: "English behavioral interview answer examples with Chinese strategy notes for PM, data, and software roles.",
+  keywords: site.keywords,
+  authors: [{ name: site.authorName }],
   alternates: {
     canonical: `${site.url}/examples`,
   },
