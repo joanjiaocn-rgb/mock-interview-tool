@@ -8,7 +8,7 @@ export const site = {
   authorName: "Interview English Coach",
   supportEmail: "support@example.com",
   publishedAt: "2026-08-09",
-  updatedAt: "2026-08-13",
+  updatedAt: "2026-08-15",
 };
 
 export const siteIds = {
