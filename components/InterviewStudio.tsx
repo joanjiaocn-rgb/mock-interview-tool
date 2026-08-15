@@ -10,6 +10,7 @@ import {
   HelpCircle,
   Languages,
   ListChecks,
+  LoaderCircle,
   PencilLine,
   RefreshCcw,
   Target,
@@ -50,6 +51,14 @@ type RiskItem = {
   signal: string;
   source: "jd" | "resume" | "role";
   prepAdvice: string;
+};
+
+type BuildInputs = {
+  role: Role;
+  level: Level;
+  questionCount: QuestionCount;
+  jdText: string;
+  resumeText: string;
 };
 
 const roles: Array<{ id: Role; label: string; cue: string; interviewSignal: string }> = [
@@ -427,12 +436,21 @@ function evaluateAnswer(answer: string, question: GeneratedQuestion, roleSignal:
 
 export function InterviewStudio() {
   const [isReady, setIsReady] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [role, setRole] = useState<Role>("pm");
   const [level, setLevel] = useState<Level>("mid");
   const [questionCount, setQuestionCount] = useState<QuestionCount>(10);
   const [jdText, setJdText] = useState("");
   const [resumeText, setResumeText] = useState("");
   const [resumeName, setResumeName] = useState("");
+  const [generatedInputs, setGeneratedInputs] = useState<BuildInputs>({
+    role: "pm",
+    level: "mid",
+    questionCount: 10,
+    jdText: "",
+    resumeText: "",
+  });
+  const [builtSignature, setBuiltSignature] = useState("");
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
   const [feedbacks, setFeedbacks] = useState<Array<ReviewFeedback | undefined>>([]);
@@ -445,22 +463,42 @@ export function InterviewStudio() {
     confidence: 3,
   });
   const answerRef = useRef<HTMLTextAreaElement | null>(null);
+  const generationStatusRef = useRef<HTMLDivElement | null>(null);
+  const buildTimerRef = useRef<number | null>(null);
 
-  const questions = useMemo(() => generateQuestions(role, level, questionCount, jdText, resumeText), [role, level, questionCount, jdText, resumeText]);
-  const riskMap = useMemo(() => buildRiskMap(role, level, jdText, resumeText), [role, level, jdText, resumeText]);
+  const questions = useMemo(
+    () => generateQuestions(generatedInputs.role, generatedInputs.level, generatedInputs.questionCount, generatedInputs.jdText, generatedInputs.resumeText),
+    [generatedInputs],
+  );
+  const riskMap = useMemo(() => buildRiskMap(generatedInputs.role, generatedInputs.level, generatedInputs.jdText, generatedInputs.resumeText), [generatedInputs]);
   const currentQuestion = questions[activeQuestion] ?? questions[0];
   const activeAnswer = answers[activeQuestion] ?? "";
   const activeFeedback = feedbacks[activeQuestion];
   const canReviewAnswer = activeAnswer.trim().length >= 40;
   const score = activeFeedback ? readinessScore(activeFeedback.scores) : null;
-  const roleMeta = roles.find((item) => item.id === role) ?? roles[0];
+  const roleMeta = roles.find((item) => item.id === generatedInputs.role) ?? roles[0];
+  const selectedRoleMeta = roles.find((item) => item.id === role) ?? roles[0];
   const jdSignals = extractSignals(jdText, role);
   const resumeSignals = extractSignals(resumeText, role);
-  const storyBank = cleanLines(resumeText).slice(0, 5);
+  const detectedSignals = [...new Set([...jdSignals, ...resumeSignals])];
+  const generatedSignals = [
+    ...new Set([...extractSignals(generatedInputs.jdText, generatedInputs.role), ...extractSignals(generatedInputs.resumeText, generatedInputs.role)]),
+  ];
+  const storyBank = cleanLines(generatedInputs.resumeText).slice(0, 5);
   const answeredCount = answers.filter((answer) => answer.trim()).length;
+  const inputSignature = `${role}|${level}|${questionCount}|${jdText}|${resumeText}`;
+  const buildStatus = isGenerating ? "building" : builtSignature === inputSignature ? "built" : builtSignature ? "stale" : "idle";
 
   useEffect(() => {
     setIsReady(true);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (buildTimerRef.current) {
+        window.clearTimeout(buildTimerRef.current);
+      }
+    };
   }, []);
 
   const reportAnalyticsEvent = (eventName: string, data: Record<string, string | number | boolean> = {}) => {
@@ -511,16 +549,57 @@ export function InterviewStudio() {
   };
 
   const focusGeneratedRound = () => {
+    if (buildTimerRef.current) {
+      window.clearTimeout(buildTimerRef.current);
+    }
+
+    const nextInputs = {
+      role,
+      level,
+      questionCount,
+      jdText,
+      resumeText,
+    };
+    const nextRiskMap = buildRiskMap(role, level, jdText, resumeText);
+
+    setIsGenerating(true);
     setActiveQuestion(0);
-    window.setTimeout(() => answerRef.current?.focus(), 0);
+    setAnswers([]);
+    setFeedbacks([]);
+    setScores({
+      clarity: 3,
+      structure: 3,
+      specificity: 2,
+      englishPhrasing: 3,
+      confidence: 3,
+    });
+    generationStatusRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
     reportAnalyticsEvent("prep_kit_generated", {
       jd_chars: jdText.length,
       resume_chars: resumeText.length,
-      risk_count: riskMap.length,
+      risk_count: nextRiskMap.length,
     });
+    buildTimerRef.current = window.setTimeout(() => {
+      setGeneratedInputs(nextInputs);
+      setBuiltSignature(inputSignature);
+      setIsGenerating(false);
+      window.setTimeout(() => generationStatusRef.current?.focus(), 0);
+    }, 650);
   };
 
   const resetWorkspace = () => {
+    if (buildTimerRef.current) {
+      window.clearTimeout(buildTimerRef.current);
+    }
+    setIsGenerating(false);
+    setBuiltSignature("");
+    setGeneratedInputs({
+      role: "pm",
+      level: "mid",
+      questionCount: 10,
+      jdText: "",
+      resumeText: "",
+    });
     setActiveQuestion(0);
     setAnswers([]);
     setFeedbacks([]);
@@ -672,7 +751,7 @@ export function InterviewStudio() {
                 </option>
               ))}
             </select>
-            <p className="role-focus">Focus: {roleMeta.interviewSignal}</p>
+            <p className="role-focus">Focus: {selectedRoleMeta.interviewSignal}</p>
           </div>
 
           <div className="control-group">
@@ -749,9 +828,9 @@ export function InterviewStudio() {
               value={resumeText}
             />
             <div className="resume-actions">
-              <button className="resume-build-button" onClick={focusGeneratedRound} type="button">
-                <ClipboardList size={16} aria-hidden="true" />
-                Build prep kit
+              <button aria-busy={isGenerating} className="resume-build-button" disabled={isGenerating} onClick={focusGeneratedRound} type="button">
+                {isGenerating ? <LoaderCircle className="spin-icon" size={16} aria-hidden="true" /> : <ClipboardList size={16} aria-hidden="true" />}
+                {isGenerating ? "Building..." : buildStatus === "built" ? "Rebuild prep kit" : "Build prep kit"}
               </button>
               <button
                 className="resume-clear-button"
@@ -768,12 +847,12 @@ export function InterviewStudio() {
             </div>
             <p className={jdText || resumeText ? "resume-status active" : "resume-status"}>
               {jdText || resumeText
-                ? `Using ${jdSignals.length + resumeSignals.length || "general"} signal${jdSignals.length + resumeSignals.length === 1 ? "" : "s"} from your inputs.`
+                ? `Found ${detectedSignals.length || "general"} signal${detectedSignals.length === 1 ? "" : "s"} in your inputs. Click Build to generate the kit.`
                 : "Paste a JD and resume to make the questions more specific."}
             </p>
-            {jdSignals.concat(resumeSignals).length > 0 ? (
+            {detectedSignals.length > 0 ? (
               <div className="resume-signal-list" aria-label="Detected signals">
-                {[...new Set([...jdSignals, ...resumeSignals])].map((signal) => (
+                {detectedSignals.map((signal) => (
                   <span key={signal}>{signal}</span>
                 ))}
               </div>
@@ -795,21 +874,59 @@ export function InterviewStudio() {
           </div>
         </aside>
 
-        <div className="practice-panel">
+        <div className={buildStatus === "built" ? "practice-panel generated" : "practice-panel"}>
           <div className="question-bar">
             <span className="question-count-label">
               Question {activeQuestion + 1} of {questions.length}
               <small>{roleMeta.label}</small>
             </span>
             <div className="question-actions">
-              <button className="interview-start-button" onClick={focusGeneratedRound} type="button">
-                <ClipboardList size={17} aria-hidden="true" />
-                Rebuild prep kit
+              <button aria-busy={isGenerating} className="interview-start-button" disabled={isGenerating} onClick={focusGeneratedRound} type="button">
+                {isGenerating ? <LoaderCircle className="spin-icon" size={17} aria-hidden="true" /> : <ClipboardList size={17} aria-hidden="true" />}
+                {isGenerating ? "Building..." : "Rebuild prep kit"}
               </button>
               <button className="voice-command" onClick={downloadCheatSheet} type="button">
                 <ArrowDownToLine size={17} aria-hidden="true" />
                 Export Markdown Kit
               </button>
+            </div>
+          </div>
+
+          <div className={`generation-status ${buildStatus}`} aria-live="polite" ref={generationStatusRef} role="status" tabIndex={-1}>
+            <div className="generation-status-main">
+              {buildStatus === "building" ? (
+                <LoaderCircle className="spin-icon" size={18} aria-hidden="true" />
+              ) : buildStatus === "built" ? (
+                <CheckCircle2 size={18} aria-hidden="true" />
+              ) : (
+                <ClipboardList size={18} aria-hidden="true" />
+              )}
+              <span>
+                <strong>
+                  {buildStatus === "building"
+                    ? "Building your prep kit"
+                    : buildStatus === "built"
+                      ? "Prep kit built"
+                      : buildStatus === "stale"
+                        ? "Inputs changed"
+                        : "Ready to build"}
+                </strong>
+                <small>
+                  {buildStatus === "building"
+                    ? "Analyzing role signals, matching resume stories, and drafting answers."
+                    : buildStatus === "built"
+                      ? "Your risk map, question set, story matches, and answer drafts are ready."
+                      : buildStatus === "stale"
+                        ? "Click Rebuild prep kit to refresh the results with your latest inputs."
+                        : "Click Build prep kit to turn your JD and resume into a practice plan."}
+                </small>
+              </span>
+            </div>
+            <div className="generation-status-metrics" aria-label="Generated prep kit summary">
+              <span>{riskMap.length} risks</span>
+              <span>{questions.length} questions</span>
+              <span>{Math.min(6, questions.length)} drafts</span>
+              <span>{generatedSignals.length || "general"} signals</span>
             </div>
           </div>
 

@@ -14,15 +14,16 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
 
   await page.getByLabel("Target role").selectOption("software");
   await page.getByRole("button", { name: /^12 questions/i }).click();
-  await expect(page.getByText(/Question 1 of 12/i)).toBeVisible();
-  await expect(page.getByRole("tab", { name: "10" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "12" })).toBeVisible();
   await page.getByLabel("Job description").fill("Software Engineer role focused on React, API reliability, incident response, and cross-functional collaboration.");
   await page.getByLabel("Resume or experience notes").fill(
     "Software engineer who launched React dashboards, improved API latency by 28%, led incident reviews with product partners, and shipped TypeScript reliability tooling.",
   );
   await page.getByRole("button", { name: "Build prep kit", exact: true }).click();
-  await expect(page.getByText(/Using .* signals from your inputs/i)).toBeVisible();
+  await expect(page.getByRole("status").getByText("Prep kit built")).toBeVisible();
+  await expect(page.getByText(/Question 1 of 12/i)).toBeVisible();
+  await expect(page.getByRole("tab", { name: "10" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "12" })).toBeVisible();
+  await expect(page.getByText(/Found .* signals in your inputs/i)).toBeVisible();
   await expect(page.getByLabel("English interview prep kit studio").getByText("\u4e2d\u6587\u601d\u8def")).toBeVisible();
   await expect(page.getByLabel("Interview Risk Map")).toBeVisible();
   await expect(page.getByLabel("Story Match").first()).toBeVisible();
@@ -69,6 +70,7 @@ test("prep kit export includes suggested drafts before the user practices", asyn
     "Data Analyst with 3 years of experience who built Tableau dashboards, analyzed signup funnel drop-off, improved completion rate by 14%, and explained A/B test tradeoffs to product and marketing teams.",
   );
   await page.getByRole("button", { name: "Build prep kit", exact: true }).click();
+  await expect(page.getByRole("status").getByText("Prep kit built")).toBeVisible();
   const firstDraft = await page.getByLabel(/Example answer to adapt/).inputValue();
 
   const downloadPromise = page.waitForEvent("download");
