@@ -1,124 +1,129 @@
-# PRD: Interview English Coach v0
+# PRD: Interview English Coach - 48-Hour Prep Kit
 
-## 状态
-- 阶段：PRD v0
-- 日期：2026-08-11
-- 结论：可继续推进到定价、合规、文案与设计阶段
-- 注意：本文档仅作为本地项目产品源文件，当前不要求提交到 GitHub
+## Status
+- Stage: PRD v1
+- Date: 2026-08-15
+- Product direction: Pivot from a generic AI mock interview tool to a 48-hour English behavioral interview prep kit.
+- Repository note: This document is a local product source file. It does not need special GitHub handling beyond normal project commits.
 
-## 一句话定位
-Interview English Coach 是面向中国求职者、留学生和非母语英文求职者的 AI 英文面试急救工具：用户粘贴 JD 和简历后，系统生成高概率英文行为面试问题，并用中文解释答题思路、英文打磨回答。
+## One-Sentence Positioning
+Interview English Coach helps non-native English candidates turn one real job description and one resume into a 48-hour behavioral interview prep kit: risk map, story match, top questions, English answer drafts, practice feedback, and a last-minute cheat sheet.
 
-## 核心判断
-不做泛 AI mock interview。首版只打一个场景：英文行为面试，尤其是面试前 48 小时准备。
+## Core Judgment
+The broad "AI mock interview" market is crowded and hard to win with a lightweight v0. The sharper opportunity is the urgent pre-interview moment: a candidate has an English interview soon, knows their experience, but cannot quickly decide what stories to use or how to say them in professional English.
 
-大平台赢在全面、专业感、题库和平台资源。本站首版要赢在具体、贴身、马上能用：
-- 面向非母语者的英文表达问题
-- 中文解释答题逻辑
-- 基于 JD 和简历定制问题
-- 快速产出可复习、可复制、可改写的答案资产
+The product should win by being:
+- Specific: built around one JD, one resume, and one upcoming interview.
+- Fast: useful within 10-15 minutes, not after a long onboarding flow.
+- Concrete: produces a prep kit the user can review before the interview.
+- Bilingual where helpful: Chinese strategy can explain the logic, while the final answer remains natural English.
+- Privacy-conscious: browser-side v0, no account, no payment, no video storage.
 
 ## Primary ICP
-主 ICP：正在准备英文面试的中国求职者、留学生、海外求职者和转岗人群。
+Primary user: Chinese-speaking or other non-native English candidates preparing for an English behavioral interview within the next 48 hours.
 
-核心痛点：
-- 有真实经历，但不知道如何用自然、专业的英语讲出来
-- 会写简历，但面试回答缺少 STAR 结构
-- 面试临近，需要快速准备高概率问题
-- 担心中式英文、表达啰嗦、重点不清晰
+High-intent scenarios:
+- "I have a behavioral interview tomorrow and do not know which stories to prepare."
+- "I can write my resume, but my spoken answer sounds translated or vague."
+- "I pasted the JD into ChatGPT, but the output is generic and not organized for practice."
+- "I need a short cheat sheet before the interview, not a whole course."
 
-次级 ICP：
-- 已有中文或英文简历，准备投海外岗位的人
-- 本周有英文 behavioral interview 的候选人
-- 英语能力尚可，但需要把经历包装成更有说服力故事的人
+Secondary users:
+- International students preparing for internship or new-grad interviews.
+- Career switchers applying to English-speaking roles.
+- Candidates who already have 3-5 project stories but need to map them to likely questions.
 
-## 用户核心任务
-用户进入网站后，应能在 10-15 分钟内完成一次完整准备：
-- 粘贴或上传 JD
-- 粘贴或上传简历/经历
-- 选择岗位方向和面试类型
-- 获得 8-12 个高概率问题
-- 针对每个问题获得中文思路、英文回答草稿、STAR 结构和可替换表达
-- 进行一轮文本模拟问答
-- 获得最终改进建议和面试前速记卡
+## Product Promise
+After pasting a JD and resume, the user should receive a compact prep kit with:
+1. Interview Risk Map: the 4-6 competencies the role is likely to test.
+2. Story Match: which resume story should answer each high-probability question.
+3. Top Questions: 6-12 behavioral questions ranked by relevance.
+4. Answer Drafts: STAR-based English drafts that use the user's own experience.
+5. Practice Feedback: score and concrete edits after the user rewrites an answer.
+6. Last-Minute Cheat Sheet: stories, questions, reusable phrases, warnings, and practiced answers.
 
-## MVP
-首版必须包含：
-- JD + 简历输入
-- AI 生成高概率 behavioral questions
-- 中英双语答题指导
-- STAR answer builder
-- 英文回答润色
-- 文本模式模拟面试
-- Interview Cheat Sheet 结果页
-- 免费试用 1 次或限制字数的轻量门槛
-- Privacy、Terms、Contact、sitemap、robots、llms.txt
+## MVP Scope
+Must include:
+- JD input.
+- Resume or experience notes input.
+- Role and seniority selection.
+- 8 / 10 / 12 question set sizes, while visually emphasizing the first 6 as the core prep kit.
+- Risk Map derived from JD/resume role signals.
+- Story Match per question.
+- Chinese strategy note per question.
+- STAR outline per question.
+- English answer draft per question.
+- Text practice answer input.
+- Feedback score across clarity, structure, specificity, English phrasing, and confidence.
+- Exportable 48-hour prep kit as a text file.
+- Privacy, Terms, Contact, sitemap, robots, llms.txt, Bing verification file, and GA4 event tracking.
 
 ## Not Do
-首版暂不做：
-- 视频面试
-- 真人教练
-- Peer mock
-- 大量岗位库
-- 算法题、系统设计题、case interview 全覆盖
-- 复杂社区功能
-- 企业/学校 B2B
-- 承诺 offer、通过率或就业结果
+Do not build in v1:
+- Video interview.
+- Human coaching.
+- Peer mock interviews.
+- Full interview course.
+- Large generic question bank.
+- Algorithm, system design, case interview, or coding interview coverage.
+- Employer-specific claims.
+- Job offer guarantees.
+- Account system, saved sessions, or payment.
 
-## 核心产品流程
-首页直接呈现工具，不做空泛 landing page。
+Voice practice is a likely v2 feature. It should be added before video because it improves spoken confidence without creating the same storage, privacy, and UX burden.
 
-1. 用户选择 `Behavioral Interview`
-2. 输入目标岗位，例如 `Product Manager`、`Data Analyst`、`Software Engineer`
-3. 粘贴 JD
-4. 粘贴简历或 3-5 段经历
-5. 点击生成
-6. 系统输出：
-   - 面试官最可能问的问题
-   - 为什么会问
-   - 中文答题策略
-   - 英文回答草稿
-   - 更自然的表达替换
-7. 用户选择一个问题进入模拟
-8. 用户输入英文回答
-9. 系统给出反馈：
-   - clarity
-   - structure
-   - specificity
-   - English phrasing
-   - confidence
-10. 系统生成可复习的 Interview Cheat Sheet
+## Core User Flow
+1. User lands on the home page and sees "Build my 48-hour prep kit."
+2. User opens `/practice`.
+3. User selects target role and level.
+4. User pastes one real JD.
+5. User pastes resume bullets, project notes, metrics, or 3-5 stories.
+6. User clicks "Build prep kit."
+7. The workspace shows:
+   - Risk Map: role signals to prepare for.
+   - Story Match: the best story anchor for the current question.
+   - Top Questions: high-probability behavioral questions.
+   - Answer Method: why they ask, Chinese strategy, STAR outline.
+   - English Draft: a starting answer to adapt.
+8. User rewrites one answer in their own English.
+9. User clicks "Get feedback."
+10. User exports the 48-hour prep kit.
 
-## 页面矩阵
+## Page Matrix
 | Route | Index | Primary Intent | Purpose |
 | --- | --- | --- | --- |
-| / | yes | AI English Interview Coach | 首页即工具入口，解释面向非母语者的英文面试准备价值 |
-| /practice | yes | English interview practice for Chinese speakers | 核心工具页：JD/简历输入、生成问题、模拟回答 |
-| /answer-builder | yes | STAR interview answer builder | STAR 回答生成器，可作为 SEO 工具页 |
-| /interview-cheat-sheet | no | Interview cheat sheet | 结果页，生成面试前速记卡 |
-| /examples | yes | English interview answer examples | 展示 PM / Data Analyst / Software Engineer 的中英双语答案样例 |
-| /pricing | yes | Pricing | 后续定价页，首版可简化或隐藏 |
-| /privacy | yes | Privacy | 隐私政策，说明简历/JD/回答数据处理 |
-| /terms | yes | Terms | 使用条款，禁止就业结果保证 |
-| /contact | yes | Contact | 支持与反馈 |
-| /llms.txt | yes | AI-readable summary | AI-readable site summary |
+| `/` | yes | 48-hour English interview prep kit | Explain the urgent use case and route users to the tool. |
+| `/practice` | yes | Build interview prep kit | Core tool page for JD/resume input, risk map, story match, questions, practice, and export. |
+| `/how-to` | yes | How to use interview prep kit | First-time guide for the 48-hour workflow. |
+| `/answer-builder` | yes | STAR interview answer builder | Static SEO support page for answer structure. |
+| `/examples` | yes | English interview answer examples | Example answers with strategy notes. |
+| `/interview-cheat-sheet` | no | Interview cheat sheet | Result-oriented support page for export structure. |
+| `/pricing` | yes | Free v0 scope | Explain free scope and future paid direction without charging now. |
+| `/privacy` | yes | Privacy | Explain browser-side handling and analytics boundaries. |
+| `/terms` | yes | Terms | Educational-use limits and no outcome guarantee. |
+| `/contact` | yes | Contact | Support and feedback. |
 
 ## Data Contract
-首版可先使用浏览器状态或轻量后端。若接入 AI API，必须避免默认长期保存简历、JD 和回答内容。
-
 ```json
 {
   "session": {
     "targetRole": "Product Manager",
-    "interviewType": "behavioral",
+    "level": "mid",
     "jobDescription": "string",
     "resumeText": "string",
-    "experienceNotes": ["string"],
+    "riskMap": [
+      {
+        "signal": "stakeholder alignment",
+        "source": "jd | resume | role",
+        "prepAdvice": "string"
+      }
+    ],
     "questions": [
       {
-        "id": "string",
+        "id": "q-1",
         "question": "string",
         "reason": "string",
+        "storyMatch": "string",
         "chineseStrategy": "string",
         "starOutline": {
           "situation": "string",
@@ -132,7 +137,7 @@ Interview English Coach 是面向中国求职者、留学生和非母语英文�
     ],
     "mockAnswers": [
       {
-        "questionId": "string",
+        "questionId": "q-1",
         "answerText": "string",
         "feedback": {
           "clarity": 1,
@@ -140,59 +145,49 @@ Interview English Coach 是面向中国求职者、留学生和非母语英文�
           "specificity": 1,
           "englishPhrasing": 1,
           "confidence": 1,
-          "summary": "string"
+          "summary": "string",
+          "rewriteMoves": ["string"]
         }
       }
     ],
-    "cheatSheet": {
+    "prepKit": {
       "topQuestions": ["string"],
+      "riskMap": ["string"],
       "storyBank": ["string"],
       "phrasesToUse": ["string"],
       "phrasesToAvoid": ["string"],
-      "lastMinuteTips": ["string"]
+      "practicedAnswers": ["string"],
+      "lastMinutePlan": ["string"]
     }
   }
 }
 ```
 
-## 合规与信任边界
-- 明确说明用户输入可能包含个人信息，提供隐私政策入口
-- 不承诺保证通过面试、获得 offer 或提升具体录用概率
-- AI 反馈只能作为练习建议，不替代职业顾问或法律建议
-- 默认基于用户提供的信息生成答案，避免编造不存在的经历
-- 若未来保存账号数据，需要补充数据保留、删除和导出机制
+## Compliance and Trust Boundaries
+- State clearly that JD, resume, notes, and answers may contain personal information.
+- Keep v1 browser-side by default.
+- Do not store resumes, transcripts, or answers in a production account.
+- Do not send resume text, JD text, answer text, or notes to analytics.
+- Do not claim guaranteed interview performance, job offers, recruiter accuracy, or official employer feedback.
+- Generated drafts must be based on user-provided experience and should avoid inventing achievements.
 
-## 首版验收标准
-真实用户任务：
-“我明天有英文 behavioral interview。我粘贴 JD 和简历后，拿到 10 个高概率问题、3 个可用 STAR 英文答案，并知道自己哪里讲得不自然。”
+## Acceptance Criteria
+Real user task:
+"I have an English behavioral interview in 48 hours. I paste the JD and resume, get the likely interview risks, know which stories to use, practice one answer, and export a cheat sheet I can review before the call."
 
-产品合格标准：
-- 生成的问题明显贴合 JD
-- 英文答案不是模板废话
-- 中文解释能让用户知道为什么这么答
-- 用户可以复制最终答案
-- 移动端可完成完整流程
-- 页面不承诺就业结果
+The product is acceptable when:
+- The first screen communicates the 48-hour prep kit value.
+- The practice page uses "Build prep kit" language, not generic "practice set" language.
+- The tool shows a visible Risk Map.
+- Each question has a visible Story Match.
+- The export includes risk map, story bank, top questions, practiced answers, and notes.
+- Mobile users can complete the flow without horizontal overflow.
+- Build and Playwright smoke tests pass.
 
-## 风险
-P0：
-- 简历、JD、回答内容可能包含敏感个人信息，必须明确数据处理方式
-
-P1：
-- AI 可能编造用户经历，需要在 prompt 和 UI 中限制为基于用户提供信息
-- 如果定位写成泛模拟面试，会直接进入红海竞争
-- SEO 关键词数据尚未完整验证，不能假设已有确定流量
-
-P2：
-- 过早做视频、语音、题库和账号系统会稀释首版重点
-- 定价未验证，需单独校准免费额度和付费点
-
-## 下游交接
-下一阶段建议：
-- 定价校准：确定免费额度、Pro 价格、是否 lifetime
-- 合规管线：补齐 Privacy、Terms、AI 内容免责声明
-- SEO-Copy Freeze：冻结首页、工具页、样例页文案
-- 设计：以“工具优先、低焦虑、高信任感”为视觉方向
-- 实现：先完成 JD/简历输入、问题生成、答案构建和 cheat sheet
+## Next Decisions
+- Add voice practice in v2 if text prep shows engagement.
+- Decide whether to keep the brand name "Interview English Coach" or rename around "Prep Kit."
+- Validate which audience converts better: Chinese-speaking candidates, international students, or general non-native speakers.
+- Revisit pricing only after usage data shows repeated exports or multiple-role preparation.
 
 [NEEDS_REVIEW]

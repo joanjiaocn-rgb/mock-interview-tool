@@ -1225,6 +1225,62 @@ h1 {
   font-weight: 600;
 }
 
+.risk-map-panel {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.risk-map-panel .method-panel-heading {
+  margin-bottom: 9px;
+}
+
+.risk-map-panel small {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.risk-map-list {
+  display: grid;
+  gap: 7px;
+}
+
+.risk-map-list article,
+.story-match-card {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 9px 10px;
+  background: var(--panel);
+}
+
+.risk-map-list strong,
+.risk-map-list span,
+.story-match-card strong,
+.story-match-card span {
+  display: block;
+}
+
+.risk-map-list strong,
+.story-match-card strong {
+  color: var(--navy-strong);
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.risk-map-list span,
+.story-match-card span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.story-match-card {
+  margin: 10px 0 12px;
+  background: var(--cobalt-soft);
+}
+
 .icon-command:hover,
 .interview-start-button:hover,
 .voice-command:hover:not(:disabled),

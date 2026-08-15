@@ -1,10 +1,10 @@
 # Interview English Coach
 
-Interview English Coach is a free English behavioral interview preparation tool for Chinese speakers, international students, and other non-native English speakers.
+Interview English Coach is a free 48-hour English behavioral interview prep kit for Chinese speakers, international students, and other non-native English speakers.
 
 Core pages:
-- /: main tool and product overview
-- /practice: JD-aware practice workspace with Chinese strategy, STAR outlines, English drafts, scoring, notes, and cheat sheet export
+- /: prep kit overview and product entry
+- /practice: JD-aware prep kit workspace with risk map, story match, top questions, Chinese strategy, STAR outlines, English drafts, scoring, notes, and prep kit export
 - /answer-builder: STAR answer builder reference
 - /examples: English answer examples with Chinese strategy notes
 - /pricing: current free v0 scope

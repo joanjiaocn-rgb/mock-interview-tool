@@ -4,12 +4,12 @@ import { readFile } from "node:fs/promises";
 test("home page exposes the English interview prep workflow", async ({ page }) => {
   await page.goto("/");
 
-  await expect(page.getByRole("heading", { name: "Practice English interview answers.", level: 1 })).toBeVisible();
-  await expect(page.getByText("JD-aware behavioral questions")).toBeVisible();
-  await page.getByRole("link", { name: /start free practice/i }).first().click();
-  await expect(page.getByRole("heading", { name: /build one interview answer at a time/i })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /set up the role, then work through one answer/i })).toBeVisible();
-  await expect(page.getByLabel("English interview preparation studio")).toHaveAttribute("data-ready", "true");
+  await expect(page.getByRole("heading", { name: "Build your 48-hour English interview prep kit.", level: 1 })).toBeVisible();
+  await expect(page.getByText("Interview Risk Map", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: /build my prep kit/i }).first().click();
+  await expect(page.getByRole("heading", { name: /build a prep kit for your next english interview/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /build the risk map, match your stories/i })).toBeVisible();
+  await expect(page.getByLabel("English interview prep kit studio")).toHaveAttribute("data-ready", "true");
   await expect(page.getByText(/Question 1 of 10/i)).toBeVisible();
 
   await page.getByLabel("Target role").selectOption("software");
@@ -21,10 +21,12 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
   await page.getByLabel("Resume or experience notes").fill(
     "Software engineer who launched React dashboards, improved API latency by 28%, led incident reviews with product partners, and shipped TypeScript reliability tooling.",
   );
-  await page.getByRole("button", { name: /create practice set/i }).click();
+  await page.getByRole("button", { name: "Build prep kit", exact: true }).click();
   await expect(page.getByText(/Using .* signals from your inputs/i)).toBeVisible();
-  await expect(page.getByLabel("English interview preparation studio").getByText("\u4e2d\u6587\u601d\u8def")).toBeVisible();
-  await expect(page.getByText("Answer method")).toBeVisible();
+  await expect(page.getByLabel("English interview prep kit studio").getByText("\u4e2d\u6587\u601d\u8def")).toBeVisible();
+  await expect(page.getByLabel("Interview Risk Map")).toBeVisible();
+  await expect(page.getByLabel("Story Match").first()).toBeVisible();
+  await expect(page.getByText("Prep method")).toBeVisible();
   await expect(page.getByLabel(/Example answer to adapt/)).toBeVisible();
   const firstDraft = await page.getByLabel(/Example answer to adapt/).inputValue();
   await page.getByRole("tab", { name: "2", exact: true }).click();
@@ -36,7 +38,7 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
   await page.getByRole("button", { name: /^Get feedback$/ }).first().click();
   await expect(page.getByRole("heading", { name: "What to keep and improve" })).toBeVisible();
   await expect(page.getByText("Try these edits")).toBeVisible();
-  await expect(page.getByLabel("English interview preparation studio").getByText(/Readiness/i)).toBeVisible();
+  await expect(page.getByLabel("English interview prep kit studio").getByText(/Readiness/i)).toBeVisible();
   const reviewNotes = page.getByLabel("Your review notes (optional)");
   await expect(reviewNotes).toHaveValue("");
   await reviewNotes.fill("Needs a concrete production example and clearer metric.");
@@ -47,6 +49,9 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
   const report = await readFile(downloadPath!, "utf8");
+  expect(report).toContain("Interview English Coach - 48-Hour Prep Kit");
+  expect(report).toContain("Interview Risk Map:");
+  expect(report).toContain("Story match:");
   expect(report).toContain(`Your answer: ${practicedAnswer}`);
   expect(report).not.toContain("One example that fits this role");
 });
@@ -55,7 +60,7 @@ test("mobile layout avoids horizontal overflow", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/practice");
 
-  await expect(page.getByLabel("English interview preparation studio")).toHaveAttribute("data-ready", "true");
+  await expect(page.getByLabel("English interview prep kit studio")).toHaveAttribute("data-ready", "true");
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
   expect(overflow).toBe(false);
   await expect(page.getByLabel("Target role")).toBeVisible();
@@ -64,9 +69,9 @@ test("mobile layout avoids horizontal overflow", async ({ page }) => {
 test("how-to page explains the first practice round", async ({ page }) => {
   await page.goto("/how-to");
 
-  await expect(page.getByRole("heading", { name: "From job description to a practiced answer.", level: 1 })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "From job description to a 48-hour prep kit.", level: 1 })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Add the role" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Practice one answer" })).toBeVisible();
-  await expect(page.getByRole("heading", { name: /same four moves/i })).toBeVisible();
-  await expect(page.getByRole("link", { name: /open practice/i })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Build the prep kit" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /after choosing the right story/i })).toBeVisible();
+  await expect(page.getByRole("link", { name: /open prep kit/i })).toBeVisible();
 });

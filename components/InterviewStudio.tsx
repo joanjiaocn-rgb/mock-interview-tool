@@ -34,6 +34,7 @@ type GeneratedQuestion = {
   id: string;
   question: string;
   reason: string;
+  storyMatch: string;
   chineseStrategy: string;
   starOutline: {
     situation: string;
@@ -43,6 +44,12 @@ type GeneratedQuestion = {
   };
   englishDraft: string;
   phraseAlternatives: string[];
+};
+
+type RiskItem = {
+  signal: string;
+  source: "jd" | "resume" | "role";
+  prepAdvice: string;
 };
 
 const roles: Array<{ id: Role; label: string; cue: string; interviewSignal: string }> = [
@@ -241,6 +248,7 @@ function generateQuestions(role: Role, level: Level, count: QuestionCount, jdTex
       id: `q-${index + 1}`,
       question,
       reason: `JD signal: ${signal}. The interviewer wants proof of ${levelMeta.cue}.`,
+      storyMatch: resumeAnchor,
       chineseStrategy: chineseStrategyTemplate(resumeAnchor),
       starOutline: {
         situation: `Story: ${resumeAnchor}.`,
@@ -252,6 +260,25 @@ function generateQuestions(role: Role, level: Level, count: QuestionCount, jdTex
       phraseAlternatives: strongPhrases.slice(index % 3, index % 3 + 3),
     };
   });
+}
+
+function buildRiskMap(role: Role, level: Level, jdText: string, resumeText: string): RiskItem[] {
+  const roleMeta = roles.find((item) => item.id === role) ?? roles[0];
+  const levelMeta = levels.find((item) => item.id === level) ?? levels[1];
+  const jdSignals = extractSignals(jdText, role).map((signal) => ({ signal, source: "jd" as const }));
+  const resumeSignals = extractSignals(resumeText, role).map((signal) => ({ signal, source: "resume" as const }));
+  const fallbackSignals = [
+    { signal: roleMeta.interviewSignal, source: "role" as const },
+    { signal: `${levelMeta.cue} under pressure`, source: "role" as const },
+  ];
+  const uniqueSignals = [...jdSignals, ...resumeSignals, ...fallbackSignals].filter(
+    (item, index, all) => all.findIndex((candidate) => candidate.signal.toLowerCase() === item.signal.toLowerCase()) === index,
+  );
+
+  return uniqueSignals.slice(0, 6).map((item) => ({
+    ...item,
+    prepAdvice: `Prepare one ${levelMeta.cue} story that proves ${item.signal} with a clear action and result.`,
+  }));
 }
 
 function readinessScore(scores: Record<ScoreKey, number>) {
@@ -420,6 +447,7 @@ export function InterviewStudio() {
   const answerRef = useRef<HTMLTextAreaElement | null>(null);
 
   const questions = useMemo(() => generateQuestions(role, level, questionCount, jdText, resumeText), [role, level, questionCount, jdText, resumeText]);
+  const riskMap = useMemo(() => buildRiskMap(role, level, jdText, resumeText), [role, level, jdText, resumeText]);
   const currentQuestion = questions[activeQuestion] ?? questions[0];
   const activeAnswer = answers[activeQuestion] ?? "";
   const activeFeedback = feedbacks[activeQuestion];
@@ -428,6 +456,7 @@ export function InterviewStudio() {
   const roleMeta = roles.find((item) => item.id === role) ?? roles[0];
   const jdSignals = extractSignals(jdText, role);
   const resumeSignals = extractSignals(resumeText, role);
+  const storyBank = cleanLines(resumeText).slice(0, 5);
   const answeredCount = answers.filter((answer) => answer.trim()).length;
 
   useEffect(() => {
@@ -484,9 +513,10 @@ export function InterviewStudio() {
   const focusGeneratedRound = () => {
     setActiveQuestion(0);
     window.setTimeout(() => answerRef.current?.focus(), 0);
-    reportAnalyticsEvent("prep_round_generated", {
+    reportAnalyticsEvent("prep_kit_generated", {
       jd_chars: jdText.length,
       resume_chars: resumeText.length,
+      risk_count: riskMap.length,
     });
   };
 
@@ -506,7 +536,7 @@ export function InterviewStudio() {
   };
 
   const downloadCheatSheet = () => {
-    reportAnalyticsEvent("cheat_sheet_export");
+    reportAnalyticsEvent("prep_kit_export");
 
     // Prefer the live textarea value so an immediate export never misses the latest keystroke.
     const exportAnswers = [...answers];
@@ -527,16 +557,22 @@ export function InterviewStudio() {
     });
 
     const report = [
-      "Interview English Coach - Cheat Sheet",
+      "Interview English Coach - 48-Hour Prep Kit",
       `Role: ${roleMeta.label}`,
       `Level: ${levels.find((item) => item.id === level)?.label}`,
       `Readiness score: ${score ?? "Not reviewed"}${score ? ` - ${scoreLabel(score)}` : ""}`,
       "",
+      "Interview Risk Map:",
+      ...riskMap.map((item, index) => `${index + 1}. ${item.signal} (${item.source}) - ${item.prepAdvice}`),
+      "",
       "Top questions:",
       ...questions.slice(0, 6).map((question, index) => `${index + 1}. ${question.question}`),
       "",
+      "Story match:",
+      ...questions.slice(0, 6).map((question, index) => `${index + 1}. ${question.storyMatch}`),
+      "",
       "Story bank:",
-      ...cleanLines(resumeText).slice(0, 5).map((line) => `- ${line}`),
+      ...(storyBank.length ? storyBank.map((line) => `- ${line}`) : ["- Add 3-5 concrete stories before your interview."]),
       "",
       "English phrases to reuse:",
       ...strongPhrases.map((phrase) => `- ${phrase}`),
@@ -552,7 +588,7 @@ export function InterviewStudio() {
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "interview-english-cheat-sheet.txt";
+    anchor.download = "interview-english-prep-kit.txt";
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -560,7 +596,7 @@ export function InterviewStudio() {
   return (
     <section
       aria-busy={!isReady}
-      aria-label="English interview preparation studio"
+      aria-label="English interview prep kit studio"
       className="studio-band"
       data-ready={isReady}
       id="studio"
@@ -569,9 +605,9 @@ export function InterviewStudio() {
         <div>
           <p className="section-kicker">
             <Languages size={16} aria-hidden="true" />
-            Practice workspace
+            Prep kit workspace
           </p>
-          <h2>Set up the role, then work through one answer at a time.</h2>
+          <h2>Build the risk map, match your stories, then practice one answer.</h2>
         </div>
         <a className="studio-help-link" href="/how-to">
           <HelpCircle size={17} aria-hidden="true" />
@@ -580,7 +616,7 @@ export function InterviewStudio() {
       </div>
 
       <div className="studio-grid">
-        <aside className="setup-panel" aria-label="Interview setup">
+        <aside className="setup-panel" aria-label="Prep kit setup">
           <div className="control-group">
             <h3>Target role</h3>
             <select
@@ -679,7 +715,7 @@ export function InterviewStudio() {
             <div className="resume-actions">
               <button className="resume-build-button" onClick={focusGeneratedRound} type="button">
                 <ClipboardList size={16} aria-hidden="true" />
-                Create practice set
+                Build prep kit
               </button>
               <button
                 className="resume-clear-button"
@@ -706,6 +742,20 @@ export function InterviewStudio() {
                 ))}
               </div>
             ) : null}
+            <div className="risk-map-panel" aria-label="Interview Risk Map">
+              <div className="method-panel-heading">
+                <span>Interview Risk Map</span>
+                <small>Top {riskMap.length}</small>
+              </div>
+              <div className="risk-map-list">
+                {riskMap.map((risk) => (
+                  <article key={`${risk.source}-${risk.signal}`}>
+                    <strong>{risk.signal}</strong>
+                    <span>{risk.prepAdvice}</span>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </aside>
 
@@ -718,11 +768,11 @@ export function InterviewStudio() {
             <div className="question-actions">
               <button className="interview-start-button" onClick={focusGeneratedRound} type="button">
                 <ClipboardList size={17} aria-hidden="true" />
-                Update practice set
+                Rebuild prep kit
               </button>
               <button className="voice-command" onClick={downloadCheatSheet} type="button">
                 <ArrowDownToLine size={17} aria-hidden="true" />
-                Export cheat sheet
+                Export prep kit
               </button>
             </div>
           </div>
@@ -730,6 +780,11 @@ export function InterviewStudio() {
           <div className="question-display">
             <p className="interviewer-label">High-probability interviewer question</p>
             <h3>{currentQuestion.question}</h3>
+          </div>
+
+          <div className="story-match-card" aria-label="Story Match">
+            <strong>Story Match</strong>
+            <span>{currentQuestion.storyMatch}</span>
           </div>
 
           <div className="question-tabs" role="tablist" aria-label="Question list">
@@ -828,13 +883,18 @@ export function InterviewStudio() {
         <aside className="score-panel" aria-label="Answer method and score">
           <div className="method-panel">
             <div className="method-panel-heading">
-              <span>Answer method</span>
+              <span>Prep method</span>
               <a href="/how-to">Full guide</a>
             </div>
 
             <div className="method-section">
               <p>Why they ask</p>
               <span>{currentQuestion.reason}</span>
+            </div>
+
+            <div className="method-section">
+              <p>Story Match</p>
+              <span>{currentQuestion.storyMatch}</span>
             </div>
 
             <div className="method-section method-section-strategy">
@@ -903,8 +963,8 @@ export function InterviewStudio() {
           <div className="cheat-sheet">
             <h3>Interview Cheat Sheet</h3>
             <ul>
-              <li>Story: {cleanLines(resumeText)[0] ?? "prepare one quantified story"}</li>
-              <li>Signal: {jdSignals[0] ?? roleMeta.interviewSignal}</li>
+              <li>Story: {storyBank[0] ?? "prepare one quantified story"}</li>
+              <li>Risk: {riskMap[0]?.signal ?? roleMeta.interviewSignal}</li>
               <li>Use: {strongPhrases[0]}</li>
               <li>Avoid: "I just helped with..."</li>
             </ul>
@@ -930,7 +990,7 @@ export function InterviewStudio() {
         </div>
         <div>
           <ListChecks size={18} aria-hidden="true" />
-          <span>{questionCount}-question behavioral prep</span>
+          <span>{questionCount}-question prep kit</span>
         </div>
         <div>
           <FileText size={18} aria-hidden="true" />
@@ -938,7 +998,7 @@ export function InterviewStudio() {
         </div>
         <div>
           <Target size={18} aria-hidden="true" />
-          <span>Chinese strategy + English answer</span>
+          <span>Risk map + story match</span>
         </div>
       </div>
     </section>

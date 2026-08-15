@@ -3,7 +3,7 @@ import { ArrowRight, BadgeCheck, BarChart3, BookOpen, CheckCircle2, ClipboardLis
 import { site, siteIds } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Free English Interview Practice",
+  title: "48-Hour English Interview Prep Kit",
   description: site.description,
   keywords: site.keywords,
   authors: [{ name: site.authorName }],
@@ -14,14 +14,14 @@ export const metadata: Metadata = {
 
 const answerFirstItems = [
   {
-    question: "What is English interview practice?",
+    question: "What is a 48-hour interview prep kit?",
     answer:
-      "English interview practice is a structured way to turn one real job description and one real work story into a clear spoken answer.",
+      "A 48-hour interview prep kit turns one real job description and resume into the risks, stories, questions, answers, and notes to review before an English behavioral interview.",
   },
   {
-    question: "What is a STAR interview answer?",
+    question: "What is Story Match?",
     answer:
-      "A STAR answer uses 4 parts: Situation, Task, Action, and Result. The goal is to show what happened, what you owned, what you did, and what changed.",
+      "Story Match chooses the resume story that best fits the question, so the answer starts from your real experience instead of a generic template.",
   },
   {
     question: "How does this tool score answers?",
@@ -34,7 +34,7 @@ const productFacts = [
   {
     value: "8 / 10 / 12",
     label: "question set sizes",
-    body: "The practice setup can generate 8, 10, or 12 behavioral interview questions from the role context.",
+    body: "The prep kit can generate 8, 10, or 12 behavioral interview questions from the role context.",
   },
   {
     value: "5",
@@ -43,8 +43,8 @@ const productFacts = [
   },
   {
     value: "4",
-    label: "STAR moves",
-    body: "The answer builder keeps the story organized around Situation, Task, Action, and Result.",
+    label: "prep outputs",
+    body: "The first pass emphasizes a risk map, story match, top questions, and a final cheat sheet.",
   },
   {
     value: "0",
@@ -97,7 +97,7 @@ const pageSchema = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "What is English interview practice?",
+          name: answerFirstItems[0].question,
           acceptedAnswer: {
             "@type": "Answer",
             text: answerFirstItems[0].answer,
@@ -105,7 +105,7 @@ const pageSchema = {
         },
         {
           "@type": "Question",
-          name: "What is a STAR interview answer?",
+          name: answerFirstItems[1].question,
           acceptedAnswer: {
             "@type": "Answer",
             text: answerFirstItems[1].answer,
@@ -155,13 +155,13 @@ const pageSchema = {
       hasDefinedTerm: [
         {
           "@type": "DefinedTerm",
-          name: "STAR answer",
-          description: "A behavioral interview answer with Situation, Task, Action, and Result.",
+          name: "Interview Risk Map",
+          description: "A short list of competencies and situations the role is likely to test in a behavioral interview.",
         },
         {
           "@type": "DefinedTerm",
-          name: "Answer feedback rubric",
-          description: "A 5-part review for clarity, structure, specificity, English phrasing, and confidence.",
+          name: "Story Match",
+          description: "A recommendation for which resume story should answer a high-probability behavioral question.",
         },
       ],
     },
@@ -170,12 +170,12 @@ const pageSchema = {
 
 const faqPreview = [
   {
-    question: "Why does the tool start with one job description?",
-    answer: "The JD gives the question generator a real role signal, so the practice set feels closer to the interview you will actually face.",
+    question: "Why start with an interview risk map?",
+    answer: "The risk map shows the skills this role is likely to test, so you can prepare the right stories before polishing sentences.",
   },
   {
-    question: "How much should I write before I start scoring answers?",
-    answer: "Enough to remember the story, not a full script. The draft should be a working reference, not text you need to memorize line by line.",
+    question: "Why match stories before writing answers?",
+    answer: "A good behavioral answer depends on the example. Story Match keeps the answer tied to your real work instead of a polished but empty script.",
   },
   {
     question: "Should I add voice or video practice first?",
@@ -183,20 +183,20 @@ const faqPreview = [
   },
   {
     question: "What should I do after I get feedback?",
-    answer: "Rewrite the answer once, focus on one concrete improvement, and practice it aloud before moving to the next question.",
+    answer: "Rewrite the answer once, export the prep kit, and rehearse the strongest stories aloud before the interview.",
   },
 ];
 
 const featureRows = [
-  "JD-aware behavioral questions",
-  "Chinese method before English draft",
-  "STAR structure and review notes",
+  "Interview Risk Map",
+  "Story Match before answer draft",
+  "48-hour cheat sheet export",
 ];
 
 const steps = [
-  { title: "Paste a JD", body: "Start with one real role description so the questions feel relevant." },
-  { title: "Paste your resume", body: "Use bullets, project notes, or a story bank with concrete details." },
-  { title: "Practice and refine", body: "Read the question, follow the method, and rewrite the answer in your own words." },
+  { title: "Paste the JD", body: "Use one real role so the risk map reflects the actual interview." },
+  { title: "Paste your resume", body: "Use bullets, project notes, metrics, or three to five stories." },
+  { title: "Build the kit", body: "Get risks, story matches, top questions, drafts, feedback, and export notes." },
 ];
 
 export default function HomePage() {
@@ -208,19 +208,19 @@ export default function HomePage() {
         <div className="simple-hero-copy hero-lead">
           <p className="section-kicker">
             <BadgeCheck size={16} aria-hidden="true" />
-            Free v0 for behavioral interviews
+            Free v0 for urgent English interviews
           </p>
-          <h1>Practice English interview answers.</h1>
+          <h1>Build your 48-hour English interview prep kit.</h1>
           <p className="hero-copy">
-            Paste a JD and your resume, then get likely questions, a clear answer method, and an English draft you can adapt.
+            Paste a JD and your resume, then get an interview risk map, story matches, likely questions, English drafts, feedback, and a last-minute cheat sheet.
           </p>
           <div className="hero-actions">
             <a className="button primary" href="/practice">
-              Start free practice
+              Build my prep kit
               <ArrowRight size={17} aria-hidden="true" />
             </a>
             <a className="button secondary" href="/how-to">
-              How to use
+              See how it works
             </a>
           </div>
           <div className="hero-proof">
@@ -234,7 +234,7 @@ export default function HomePage() {
             </span>
             <span>
               <CheckCircle2 size={16} aria-hidden="true" />
-              Built for non-native speakers
+              Built for 48-hour prep
             </span>
           </div>
         </div>
@@ -244,28 +244,28 @@ export default function HomePage() {
           <div className="hero-board-back hero-board-back-two" />
           <article className="hero-board-main">
             <div className="hero-board-topline">
-              <span>Practice mode</span>
-              <b>Question 1 / 10</b>
+              <span>Prep kit mode</span>
+              <b>Risk 1 / 6</b>
             </div>
-            <h2>Tell me about a time you handled ambiguity and still delivered.</h2>
-            <p className="hero-board-copy">Use the method, then rewrite the draft with your own metrics and story.</p>
+            <h2>Stakeholder alignment may be tested. Which story will you use?</h2>
+            <p className="hero-board-copy">Match one resume story to the risk, then turn it into a concise English answer.</p>
             <div className="hero-board-tags">
-              <span>JD aware</span>
-              <span>Chinese method</span>
-              <span>STAR</span>
-              <span>English draft</span>
+              <span>Risk map</span>
+              <span>Story match</span>
+              <span>Top questions</span>
+              <span>Cheat sheet</span>
             </div>
             <div className="hero-board-callout hero-board-callout-top">
               <Target size={16} aria-hidden="true" />
-              Focus on one story
+              Pick the strongest story
             </div>
             <div className="hero-board-callout hero-board-callout-right">
               <ClipboardList size={16} aria-hidden="true" />
-              Create practice set
+              Build prep kit
             </div>
             <div className="hero-board-callout hero-board-callout-bottom">
               <Languages size={16} aria-hidden="true" />
-              Rewrite in your own English
+              Rehearse in English
             </div>
           </article>
         </div>
@@ -286,7 +286,7 @@ export default function HomePage() {
             <Target size={16} aria-hidden="true" />
             Short answers
           </p>
-          <h2 id="answer-first-title">Clear definitions before the details.</h2>
+          <h2 id="answer-first-title">Clear answers before the details.</h2>
         </div>
         <div className="answer-grid">
           {answerFirstItems.map((item) => (
@@ -306,7 +306,7 @@ export default function HomePage() {
             <BarChart3 size={16} aria-hidden="true" />
             Product facts
           </p>
-          <h2 id="product-facts-title">Verifiable numbers in the current v0.</h2>
+          <h2 id="product-facts-title">Verifiable prep-kit facts in the current v0.</h2>
         </div>
         <dl className="fact-grid">
           {productFacts.map((fact) => (
@@ -327,7 +327,7 @@ export default function HomePage() {
             <BookOpen size={16} aria-hidden="true" />
             Why this workflow
           </p>
-          <h2>What makes a behavioral answer easier to score?</h2>
+          <h2>What makes the prep kit more useful than a generic mock interview?</h2>
         </div>
         <div className="faq-list">
           {faqPreview.map((item) => (
@@ -372,7 +372,7 @@ export default function HomePage() {
             <ClipboardList size={16} aria-hidden="true" />
             First-time flow
           </p>
-          <h2>Three steps, then practice.</h2>
+          <h2>Three steps, then export.</h2>
         </div>
         <div className="quick-start-panel compact">
           {steps.map((step, index) => (

@@ -14,7 +14,7 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: "Free English Interview Practice | Interview English Coach",
+    default: "48-Hour English Interview Prep Kit | Interview English Coach",
     template: `%s | ${site.shortName}`,
   },
   description: site.description,
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     canonical: site.url,
   },
   openGraph: {
-    title: "Free English Interview Practice | Interview English Coach",
+    title: "48-Hour English Interview Prep Kit | Interview English Coach",
     description: site.description,
     url: site.url,
     type: "website",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free English Interview Practice | Interview English Coach",
+    title: "48-Hour English Interview Prep Kit | Interview English Coach",
     description: site.description,
   },
 };
@@ -101,7 +101,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                 Learn the flow
               </a>
               <a className="button primary header-link" href="/practice">
-                Start free
+                Build kit
                 <ArrowRight size={16} aria-hidden="true" />
               </a>
             </div>
@@ -111,7 +111,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
             <div className="footer-inner">
               <div className="footer-brand">
                 <ShieldCheck size={18} aria-hidden="true" />
-                <span>Free English interview prep for non-native speakers.</span>
+                <span>Free 48-hour English interview prep kit for non-native speakers.</span>
               </div>
               <nav className="footer-links" aria-label="Footer navigation">
                 {routes.slice(1).map((route) => (

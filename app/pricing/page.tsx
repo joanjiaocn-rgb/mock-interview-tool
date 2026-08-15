@@ -17,13 +17,13 @@ export default function PricingPage() {
       <p className="section-kicker">Pricing</p>
       <h1>Free for the current v0.</h1>
       <p>
-        Interview English Coach currently has no payment, subscription, checkout, or account requirement. The goal of this version is to test whether the narrow English behavioral interview workflow is useful.
+        Interview English Coach currently has no payment, subscription, checkout, or account requirement. The goal of this version is to test whether a narrow 48-hour English interview prep kit is useful.
       </p>
       <div className="pricing-table single-pricing">
         <div>
           <strong>Free v0</strong>
           <span>$0</span>
-          <p>JD input, resume input, likely questions, Chinese strategy, STAR outlines, English drafts, self-scoring, notes, and cheat sheet export.</p>
+          <p>JD input, resume input, risk map, story match, likely questions, Chinese strategy, STAR outlines, English drafts, self-scoring, notes, and prep kit export.</p>
         </div>
       </div>
     </main>

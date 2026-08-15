@@ -3,8 +3,15 @@ export const site = {
   shortName: "EnglishCoach",
   url: "https://mock-interview.space",
   description:
-    "Free English interview prep for non-native speakers. Paste a JD and resume to get likely questions, STAR outlines, and answer drafts.",
-  keywords: ["English interview practice", "behavioral interview prep", "STAR interview answer builder", "Chinese speakers"],
+    "Free 48-hour English interview prep kit for non-native speakers. Paste a JD and resume to get a risk map, story match, likely questions, answer drafts, feedback, and a cheat sheet.",
+  keywords: [
+    "48 hour interview prep kit",
+    "English interview prep",
+    "behavioral interview prep",
+    "STAR interview answer builder",
+    "interview cheat sheet",
+    "Chinese speakers",
+  ],
   authorName: "Interview English Coach",
   supportEmail: "support@example.com",
   publishedAt: "2026-08-09",

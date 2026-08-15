@@ -19,7 +19,7 @@ export default function TermsPage() {
       <p>Last updated: August 15, 2026.</p>
       <h2>Use of the Tool</h2>
       <p>
-        Interview English Coach provides English behavioral interview questions, Chinese answer strategy, STAR outlines, draft answers, notes, scoring rubrics, and cheat sheet export. It is an educational practice tool and does not guarantee job offers, interview outcomes, or professional career advice.
+        Interview English Coach provides a 48-hour English behavioral interview prep kit with risk maps, story matches, likely questions, Chinese answer strategy, STAR outlines, draft answers, notes, scoring rubrics, and prep kit export. It is an educational practice tool and does not guarantee job offers, interview outcomes, or professional career advice.
       </p>
       <h2>Candidate Content</h2>
       <p>You are responsible for the content you type into the tool. Avoid entering confidential employer data, unnecessary personal identifiers, or sensitive private information.</p>

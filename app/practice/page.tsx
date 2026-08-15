@@ -4,8 +4,8 @@ import { InterviewStudio } from "@/components/InterviewStudio";
 import { site } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: "Practice English Interview Answers",
-  description: "Free English behavioral interview practice with JD-aware questions, Chinese strategy, STAR outlines, and English answer drafts.",
+  title: "Build Your 48-Hour Interview Prep Kit",
+  description: "Build a free English behavioral interview prep kit with a risk map, story match, likely questions, answer drafts, feedback, and a cheat sheet.",
   keywords: site.keywords,
   authors: [{ name: site.authorName }],
   alternates: {
@@ -18,9 +18,9 @@ export default function PracticePage() {
     <main className="main">
       <section className="practice-page-intro">
         <div>
-          <p className="section-kicker">Practice</p>
-          <h1>Build one interview answer at a time.</h1>
-          <p>Set up the role on the left, answer in the center, and use the method guide on the right.</p>
+          <p className="section-kicker">48-hour prep kit</p>
+          <h1>Build a prep kit for your next English interview.</h1>
+          <p>Paste the role and your experience, then use the risk map, story match, and answer guide to prepare fast.</p>
         </div>
         <a className="button secondary" href="/how-to">
           <HelpCircle size={17} aria-hidden="true" />

@@ -18,13 +18,13 @@ export default function PrivacyPage() {
       <h1>Privacy Policy</h1>
       <p>Last updated: August 15, 2026.</p>
       <p>
-        Interview English Coach is currently a free browser-side preparation tool. Job descriptions, resume text, experience notes, answer drafts, scoring changes, and exported cheat sheets are processed in your browser during the session.
+        Interview English Coach is currently a free browser-side preparation tool. Job descriptions, resume text, experience notes, risk maps, story matches, answer drafts, scoring changes, and exported prep kits are processed in your browser during the session.
       </p>
       <h2>Data We Collect</h2>
       <p>This v0 does not require an account, does not collect payment, does not record video, and does not send resume text or interview answers to a production storage account.</p>
       <h2>Resume and JD Text</h2>
       <p>
-        Resume upload currently supports plain text formats or pasted resume content. Job descriptions and resume text are used to tailor practice questions, Chinese strategy, STAR outlines, and English answer drafts for the current session.
+        Resume upload currently supports plain text formats or pasted resume content. Job descriptions and resume text are used to tailor risk maps, story matches, practice questions, Chinese strategy, STAR outlines, and English answer drafts for the current session.
       </p>
       <h2>Analytics</h2>
       <p>Google Analytics 4 may be used through Google tag to measure page views and product interactions. The site does not send resume text, JD text, answer text, or notes to Google Analytics. Google may process browser, device, IP, and cookie data according to its own terms.</p>
