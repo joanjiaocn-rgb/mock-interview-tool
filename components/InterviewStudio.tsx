@@ -316,42 +316,95 @@ function countAny(text: string, words: string[]) {
   return words.filter((word) => lower.includes(word)).length;
 }
 
+function hasAnyTerm(text: string, terms: string[]) {
+  return terms.some((term) => text.includes(term));
+}
+
+function matchingTerms(text: string, terms: string[]) {
+  return terms.filter((term) => text.includes(term));
+}
+
+function sentenceSnippet(text: string, terms: string[]) {
+  const lowerTerms = terms.map((term) => term.toLowerCase());
+  const sentence = splitSentences(text).find((item) => {
+    const lower = item.toLowerCase();
+    return lowerTerms.some((term) => lower.includes(term));
+  });
+
+  if (!sentence) return "";
+
+  return sentence.length > 96 ? `${sentence.slice(0, 93).trim()}...` : sentence;
+}
+
+function uniqueLimit(items: string[], limit: number) {
+  return items.filter(Boolean).filter((item, index, all) => all.indexOf(item) === index).slice(0, limit);
+}
+
 function questionFocus(question: string) {
   const lower = question.toLowerCase();
 
   if (/(disagree|conflict|critique|feedback)/.test(lower)) {
+    if (/feedback|critique/.test(lower)) {
+      return {
+        label: "feedback or critique",
+        evidence: ["feedback", "critique", "changed", "improved", "asked", "adjusted", "learned"],
+        expected: "who gave the feedback, what you changed, and how the next version improved",
+        rewrite: "Add: The feedback was that..., so I changed... and checked whether...",
+      };
+    }
+
     return {
-      label: "the disagreement",
-      improvement: "Make the disagreement visible: name the other perspective, then explain how you reached alignment.",
+      label: "disagreement or conflict",
+      evidence: ["disagreed", "conflict", "perspective", "stakeholder", "teammate", "alignment", "agreed", "resolved"],
+      expected: "the other person's view, the decision criteria, and how you reached alignment",
+      rewrite: "Add: The disagreement was between... We compared the options by... and agreed to...",
     };
   }
   if (/(ambig|unclear|prioritize|deadline|tradeoff)/.test(lower)) {
     return {
-      label: "the decision",
-      improvement: "Clarify the decision: state the constraint, the options you weighed, and why you chose this path.",
+      label: "decision under constraints",
+      evidence: ["ambiguous", "unclear", "constraint", "priority", "prioritized", "tradeoff", "deadline", "options", "decided"],
+      expected: "the constraint, the options you weighed, and why your choice was reasonable",
+      rewrite: "Add: The constraint was... I compared... and chose... because...",
     };
   }
   if (/(mistake|did not work|failure|issue|risk|production)/.test(lower)) {
     return {
-      label: "the recovery",
-      improvement: "Spend one sentence on the recovery: what changed after the problem appeared and how you verified the fix.",
+      label: "failure recovery",
+      evidence: ["mistake", "failed", "issue", "risk", "root cause", "recovered", "fixed", "verified", "prevented"],
+      expected: "what went wrong, your recovery action, and how you prevented the same issue later",
+      rewrite: "Add: The issue appeared when... I fixed it by... and prevented it later by...",
     };
   }
   if (/(data|metric|customer|research|experiment)/.test(lower)) {
     return {
-      label: "the evidence",
-      improvement: "Show the evidence chain: what signal you found, what it changed, and what happened after the decision.",
+      label: "evidence-led decision",
+      evidence: ["data", "metric", "analysis", "customer", "research", "experiment", "dashboard", "segment", "tested", "measured"],
+      expected: "the signal you found, the decision it changed, and the measured result",
+      rewrite: "Add: The data showed... That changed our decision from... to... We measured...",
     };
   }
   if (/(influence|without formal authority|alignment|trust|team)/.test(lower)) {
     return {
-      label: "the collaboration",
-      improvement: "Show the collaboration move: who needed convincing, what you changed in your communication, and what they did next.",
+      label: "influence and collaboration",
+      evidence: ["influenced", "aligned", "stakeholder", "partner", "trust", "buy-in", "team", "convinced", "shared"],
+      expected: "who needed convincing, what you changed in your communication, and what they did next",
+      rewrite: "Add: The person I needed to influence cared about... I reframed the message as...",
+    };
+  }
+  if (/(complex|simply|communicate)/.test(lower)) {
+    return {
+      label: "clear communication",
+      evidence: ["explained", "communicated", "audience", "simple", "technical", "decision", "summary", "follow-up"],
+      expected: "the audience, what was hard to understand, and how your explanation changed the decision",
+      rewrite: "Add: The audience needed to decide... so I simplified the message by...",
     };
   }
   return {
-    label: "your ownership",
-    improvement: "Make your ownership unmistakable: name the part you personally decided, built, or changed.",
+    label: "personal ownership",
+    evidence: ["owned", "led", "built", "created", "decided", "improved", "launched", "shipped"],
+    expected: "the part you personally owned, the action you took, and the outcome",
+    rewrite: "Add: My specific ownership was... I decided to... The outcome was...",
   };
 }
 
@@ -372,10 +425,22 @@ function evaluateAnswer(answer: string, question: GeneratedQuestion, roleSignal:
   const hasChallenge = includesAny(lower, ["problem", "issue", "risk", "constraint", "conflict", "unclear", "disagree", "tradeoff", "failure"]);
   const hasReflection = includesAny(lower, ["learned", "lesson", "next time", "would repeat", "changed how", "takeaway"]);
   const genericOpening = /^(one example|a relevant example|i would answer|in my experience)\b/i.test(trimmed);
+  const weakPhraseUsed = weakPhrases.find((phrase) => lower.includes(phrase));
+  const usedOwnershipVerbs = matchingTerms(lower, ownershipVerbs);
+  const metricMatch = trimmed.match(/\b\d+(\.\d+)?\s?(%|x|k|m|hours?|days?|weeks?|users?|customers?|revenue|dollars?)?\b|\$/i)?.[0];
+  const focusSnippet = sentenceSnippet(trimmed, focus.evidence);
+  const resultSnippet = sentenceSnippet(trimmed, resultWords);
+  const questionEvidence = hasAnyTerm(lower, focus.evidence);
   const hasQuestionSignal = roleSignal
     .split(/\s+|\/|,|and/)
     .filter((word) => word.length > 5)
     .some((word) => lower.includes(word.toLowerCase()));
+  const hasStoryAnchor = question.storyMatch
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((word) => word.length > 6)
+    .slice(0, 6)
+    .some((word) => lower.includes(word));
 
   const clarity = clampScore(
     2 +
@@ -384,59 +449,139 @@ function evaluateAnswer(answer: string, question: GeneratedQuestion, roleSignal:
       (sentences.length >= 3 && sentences.length <= 8 ? 1 : 0) -
       (words.length > 240 ? 1 : 0),
   );
-  const structure = clampScore(2 + (hasFirstPerson ? 1 : 0) + (hasResult ? 1 : 0) + (hasStarWords >= 2 ? 1 : 0));
-  const specificity = clampScore(1 + (hasMetric ? 2 : 0) + (hasQuestionSignal ? 1 : 0) + (words.length >= 80 ? 1 : 0));
+  const structure = clampScore(1 + (hasContext ? 1 : 0) + (hasChallenge ? 1 : 0) + (hasResult ? 1 : 0) + (hasStarWords >= 2 ? 1 : 0));
+  const specificity = clampScore(1 + (hasMetric ? 2 : 0) + (questionEvidence ? 1 : 0) + (hasStoryAnchor ? 1 : 0));
   const englishPhrasing = clampScore(3 + (sentences.length >= 3 ? 1 : 0) + (hasWeakPhrase ? -1 : 0) + (words.length > 220 ? -1 : 0));
   const confidence = clampScore(2 + (hasFirstPerson ? 1 : 0) + (hasOwnership ? 1 : 0) + (hasWeakPhrase ? -1 : 0) + (hasResult ? 1 : 0));
   const scores = { clarity, structure, specificity, englishPhrasing, confidence };
   const score = readinessScore(scores);
 
-  const strengths = [
-    hasFirstPerson ? "Uses first-person ownership, which helps the answer sound personal." : "",
-    hasOwnership ? "Includes action verbs that show what you personally did." : "",
-    hasResult ? "Points toward an outcome instead of stopping at the process." : "",
-    hasReflection ? "Ends with a lesson or repeatable takeaway." : "",
-    hasQuestionSignal ? "Connects the answer back to the role signal." : "",
-  ].filter(Boolean);
+  const strengths = uniqueLimit(
+    [
+      hasContext ? `Sets a usable context${sentences[0] ? `: "${sentenceSnippet(trimmed, [sentences[0].slice(0, 20).toLowerCase()]) || sentences[0].slice(0, 90)}"` : "."}` : "",
+      questionEvidence && focusSnippet ? `Has some ${focus.label} evidence: "${focusSnippet}"` : "",
+      usedOwnershipVerbs.length ? `Shows ownership with verbs like ${usedOwnershipVerbs.slice(0, 2).join(" and ")}.` : "",
+      metricMatch ? `Includes a concrete proof point (${metricMatch}).` : "",
+      resultSnippet ? `Mentions an outcome: "${resultSnippet}"` : "",
+      hasReflection ? "Includes a learning point, which helps the answer feel mature." : "",
+      hasStoryAnchor ? "Uses material from the generated story match instead of sounding generic." : "",
+    ],
+    3,
+  );
 
-  const improvements = [
-    genericOpening ? `Open with ${focus.label} instead of a template sentence.` : "",
-    !hasContext ? "Set the scene before the action: say who or what was affected and what was at stake." : "",
-    !hasChallenge ? focus.improvement : "",
-    ownershipCount < 2 ? "Add a second concrete action so the answer shows your judgment, not just your involvement." : "",
-    !hasMetric ? "Add a number, timeline, scope, or observable result to make the story verifiable." : "",
-    !hasResult ? "Close with the outcome: what improved, changed, or was decided because of your work." : "",
-    !hasReflection ? "Finish with one reusable lesson or what you would repeat next time." : "",
-    !hasFirstPerson ? "Use more I-statements so the interviewer can see your personal contribution." : "",
-    hasWeakPhrase ? "Remove soft phrases like \"just\", \"kind of\", or \"helped a lot\"." : "",
-    words.length < 70 ? "Expand the answer with one concrete action and one outcome." : "",
-    words.length > 220 ? "Shorten the answer so it can be spoken in about 90 seconds." : "",
-  ].filter(Boolean).filter((item, index, all) => all.indexOf(item) === index);
+  const improvements = uniqueLimit(
+    [
+      !questionEvidence ? `[Question fit] This is a ${focus.label} question. Add ${focus.expected}.` : "",
+      genericOpening ? `[Opening] Start with the real situation, not a template phrase like "${trimmed.split(/\s+/).slice(0, 4).join(" ")}..."` : "",
+      !hasContext ? "[Setup] Name the project, team, or user group before explaining what you did." : "",
+      !hasChallenge ? `[Tension] Explain what made the story hard: the risk, constraint, disagreement, or tradeoff.` : "",
+      ownershipCount < 2 ? `[Action depth] Add two specific actions or decisions you personally owned during the ${focus.label}.` : "",
+      !hasMetric ? "[Evidence] Add a number, timeline, scope, or observable before/after result." : "",
+      !hasResult ? "[Ending] Close with what improved, changed, shipped, or was decided because of your work." : "",
+      !hasReflection && /(feedback|critique|mistake|failure|did not work)/i.test(question.question)
+        ? "[Learning] Since this question tests maturity, add one sentence about what you changed afterward."
+        : "",
+      !hasQuestionSignal ? `[Role fit] Tie the final sentence back to ${roleSignal}.` : "",
+      !hasFirstPerson ? "[Ownership] Use I-statements so the interviewer can separate your contribution from the team's work." : "",
+      weakPhraseUsed ? `[Language] Replace "${weakPhraseUsed}" with a precise action verb or result.` : "",
+      words.length < 70 ? "[Depth] This is still short. Add one action, one obstacle, and one outcome." : "",
+      words.length > 220 ? "[Concision] This is long for a spoken answer. Cut background and keep the strongest 90 seconds." : "",
+    ],
+    4,
+  );
 
-  const rewriteMoves = [
-    genericOpening ? `Start with: In [project], the challenge was...` : "Keep the opening specific and brief.",
-    ownershipCount < 2 ? "Add: My specific responsibility was..." : "Keep the strongest I-action in the middle.",
-    !hasMetric ? "Add: The measurable result was..." : !hasReflection ? "Add: What I learned from this was..." : "Use the lesson as your final sentence.",
-  ].filter((item, index, all) => all.indexOf(item) === index);
+  const rewriteMoves = uniqueLimit(
+    [
+      !questionEvidence ? focus.rewrite : "",
+      !hasContext ? "Add: The situation was... and the stake was..." : "",
+      ownershipCount < 2 ? "Add: I decided to... / I changed..." : "",
+      !hasMetric ? "Add: We measured this by... / The result was..." : "",
+      !hasResult ? "End with: As a result..." : "",
+      weakPhraseUsed ? `Replace "${weakPhraseUsed}" with "owned", "led", "built", or the exact action.` : "",
+      hasResult && hasMetric && hasReflection ? "Keep this structure and rehearse it aloud in 60-90 seconds." : "",
+    ],
+    3,
+  );
+
+  const topGap = improvements[0]?.replace(/^\[[^\]]+\]\s*/, "") ?? `Keep sharpening the ${focus.label}.`;
 
   return {
     summary: score >= 75
-      ? `Strong draft. Keep the ${focus.label} clear, then rehearse it aloud.`
+      ? `Strong draft for a ${focus.label} question. Next upgrade: ${topGap}`
       : score >= 58
-        ? `Useful start. Strengthen ${focus.label} and give the story a cleaner ending.`
-        : `Good raw material. Build the story around ${focus.label} before polishing English.`,
-    strengths: strengths.length ? strengths.slice(0, 3) : ["You have a starting answer to refine."],
+        ? `Relevant start for a ${focus.label} question. Biggest gap: ${topGap}`
+        : `This needs a clearer ${focus.label} story before polishing English. Start with: ${topGap}`,
+    strengths: strengths.length ? strengths : ["You have a draft to work from, but it needs more concrete interview evidence."],
     improvements: improvements.length
-      ? improvements.slice(0, 4)
-      : ["Your structure is working. Try a more vivid detail or a shorter opening."],
+      ? improvements
+      : [`[Polish] The structure is usable. Make one sentence more vivid and rehearse the ${focus.label} aloud.`],
     rewriteMoves,
     scores,
   };
 }
 
+type PrepKitResult = {
+  riskMap: RiskItem[];
+  questions: GeneratedQuestion[];
+  source?: string;
+};
+
+async function postJson<T>(url: string, payload: unknown): Promise<T | null> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 28000);
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      signal: controller.signal,
+    });
+
+    if (!response.ok) return null;
+
+    return (await response.json()) as T;
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function isValidPrepKit(value: unknown): value is PrepKitResult {
+  const candidate = value as PrepKitResult;
+  return Array.isArray(candidate?.riskMap) && candidate.riskMap.length > 0 && Array.isArray(candidate?.questions) && candidate.questions.length > 0;
+}
+
+function isValidFeedback(value: unknown): value is { feedback: ReviewFeedback; source?: string } {
+  const candidate = value as { feedback?: ReviewFeedback };
+  return Boolean(
+    candidate?.feedback?.summary &&
+      Array.isArray(candidate.feedback.strengths) &&
+      Array.isArray(candidate.feedback.improvements) &&
+      Array.isArray(candidate.feedback.rewriteMoves) &&
+      candidate.feedback.scores,
+  );
+}
+
+async function requestAiPrepKit(inputs: BuildInputs) {
+  const result = await postJson<PrepKitResult>("/api/prep-kit", inputs);
+  return isValidPrepKit(result) ? result : null;
+}
+
+async function requestAiFeedback(answer: string, question: GeneratedQuestion, roleSignal: string) {
+  const result = await postJson<{ feedback: ReviewFeedback; source?: string }>("/api/answer-feedback", {
+    answer,
+    question,
+    roleSignal,
+  });
+  return isValidFeedback(result) ? result.feedback : null;
+}
+
 export function InterviewStudio() {
   const [isReady, setIsReady] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isReviewing, setIsReviewing] = useState(false);
   const [role, setRole] = useState<Role>("pm");
   const [level, setLevel] = useState<Level>("mid");
   const [questionCount, setQuestionCount] = useState<QuestionCount>(10);
@@ -450,6 +595,8 @@ export function InterviewStudio() {
     jdText: "",
     resumeText: "",
   });
+  const [aiPrepKit, setAiPrepKit] = useState<PrepKitResult | null>(null);
+  const [generationSource, setGenerationSource] = useState<"ai" | "local" | "">("");
   const [builtSignature, setBuiltSignature] = useState("");
   const [activeQuestion, setActiveQuestion] = useState(0);
   const [answers, setAnswers] = useState<string[]>([]);
@@ -466,11 +613,13 @@ export function InterviewStudio() {
   const generationStatusRef = useRef<HTMLDivElement | null>(null);
   const buildTimerRef = useRef<number | null>(null);
 
-  const questions = useMemo(
+  const localQuestions = useMemo(
     () => generateQuestions(generatedInputs.role, generatedInputs.level, generatedInputs.questionCount, generatedInputs.jdText, generatedInputs.resumeText),
     [generatedInputs],
   );
-  const riskMap = useMemo(() => buildRiskMap(generatedInputs.role, generatedInputs.level, generatedInputs.jdText, generatedInputs.resumeText), [generatedInputs]);
+  const localRiskMap = useMemo(() => buildRiskMap(generatedInputs.role, generatedInputs.level, generatedInputs.jdText, generatedInputs.resumeText), [generatedInputs]);
+  const questions = aiPrepKit?.questions.length ? aiPrepKit.questions : localQuestions;
+  const riskMap = aiPrepKit?.riskMap.length ? aiPrepKit.riskMap : localRiskMap;
   const currentQuestion = questions[activeQuestion] ?? questions[0];
   const activeAnswer = answers[activeQuestion] ?? "";
   const activeFeedback = feedbacks[activeQuestion];
@@ -523,10 +672,13 @@ export function InterviewStudio() {
     });
   };
 
-  const reviewAnswer = () => {
+  const reviewAnswer = async () => {
     if (!canReviewAnswer) return;
 
-    const feedback = evaluateAnswer(activeAnswer, currentQuestion, roleMeta.interviewSignal);
+    setIsReviewing(true);
+    const aiFeedback = await requestAiFeedback(activeAnswer, currentQuestion, roleMeta.interviewSignal);
+    const feedback = aiFeedback ?? evaluateAnswer(activeAnswer, currentQuestion, roleMeta.interviewSignal);
+    setIsReviewing(false);
     setScores(feedback.scores);
     setFeedbacks((current) => {
       const next = [...current];
@@ -536,6 +688,7 @@ export function InterviewStudio() {
     reportAnalyticsEvent("answer_feedback_generated", {
       answer_chars: activeAnswer.length,
       readiness_score: readinessScore(feedback.scores),
+      ai_used: Boolean(aiFeedback),
     });
   };
 
@@ -548,7 +701,7 @@ export function InterviewStudio() {
     reportAnalyticsEvent("resume_uploaded", { size: file.size });
   };
 
-  const focusGeneratedRound = () => {
+  const focusGeneratedRound = async () => {
     if (buildTimerRef.current) {
       window.clearTimeout(buildTimerRef.current);
     }
@@ -566,6 +719,8 @@ export function InterviewStudio() {
     setActiveQuestion(0);
     setAnswers([]);
     setFeedbacks([]);
+    setAiPrepKit(null);
+    setGenerationSource("");
     setScores({
       clarity: 3,
       structure: 3,
@@ -579,12 +734,27 @@ export function InterviewStudio() {
       resume_chars: resumeText.length,
       risk_count: nextRiskMap.length,
     });
-    buildTimerRef.current = window.setTimeout(() => {
-      setGeneratedInputs(nextInputs);
-      setBuiltSignature(inputSignature);
-      setIsGenerating(false);
-      window.setTimeout(() => generationStatusRef.current?.focus(), 0);
-    }, 650);
+    const startedAt = Date.now();
+    const aiResult = await requestAiPrepKit(nextInputs);
+    const elapsed = Date.now() - startedAt;
+
+    if (elapsed < 650) {
+      await new Promise((resolve) => {
+        buildTimerRef.current = window.setTimeout(resolve, 650 - elapsed);
+      });
+    }
+
+    setGeneratedInputs(nextInputs);
+    setAiPrepKit(aiResult);
+    setGenerationSource(aiResult ? "ai" : "local");
+    setBuiltSignature(inputSignature);
+    setIsGenerating(false);
+    window.setTimeout(() => generationStatusRef.current?.focus(), 0);
+    reportAnalyticsEvent("prep_kit_build_finished", {
+      ai_used: Boolean(aiResult),
+      risk_count: aiResult?.riskMap.length ?? nextRiskMap.length,
+      question_count: aiResult?.questions.length ?? questionCount,
+    });
   };
 
   const resetWorkspace = () => {
@@ -593,6 +763,8 @@ export function InterviewStudio() {
     }
     setIsGenerating(false);
     setBuiltSignature("");
+    setAiPrepKit(null);
+    setGenerationSource("");
     setGeneratedInputs({
       role: "pm",
       level: "mid",
@@ -913,9 +1085,11 @@ export function InterviewStudio() {
                 </strong>
                 <small>
                   {buildStatus === "building"
-                    ? "Analyzing role signals, matching resume stories, and drafting answers."
+                    ? "Sending the role and experience to the AI coach, then checking the draft structure."
                     : buildStatus === "built"
-                      ? "Your risk map, question set, story matches, and answer drafts are ready."
+                      ? generationSource === "ai"
+                        ? "AI-generated risk map, question set, story matches, and answer drafts are ready."
+                        : "Backup local draft is ready. AI is unavailable, but you can still practice and export."
                       : buildStatus === "stale"
                         ? "Click Rebuild prep kit to refresh the results with your latest inputs."
                         : "Click Build prep kit to turn your JD and resume into a practice plan."}
@@ -973,11 +1147,11 @@ export function InterviewStudio() {
           />
 
           <div className="answer-feedback-actions">
-            <button className="feedback-button" disabled={!canReviewAnswer} onClick={reviewAnswer} type="button">
-              <ClipboardCheck size={17} aria-hidden="true" />
-              Get feedback
+            <button aria-busy={isReviewing} className="feedback-button" disabled={!canReviewAnswer || isReviewing} onClick={reviewAnswer} type="button">
+              {isReviewing ? <LoaderCircle className="spin-icon" size={17} aria-hidden="true" /> : <ClipboardCheck size={17} aria-hidden="true" />}
+              {isReviewing ? "Reviewing..." : "Get feedback"}
             </button>
-            <span>{canReviewAnswer ? "Score this answer and get revision suggestions." : "Write at least 40 characters to unlock feedback."}</span>
+            <span>{canReviewAnswer ? "AI reviews this answer first; local scoring is used if AI is unavailable." : "Write at least 40 characters to unlock feedback."}</span>
           </div>
 
           <section className={activeFeedback ? "feedback-card answer-feedback-card" : "feedback-card answer-feedback-card empty"} aria-live="polite">

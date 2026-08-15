@@ -17,7 +17,7 @@ The product should win by being:
 - Fast: useful within 10-15 minutes, not after a long onboarding flow.
 - Concrete: produces a prep kit the user can review before the interview.
 - Bilingual where helpful: Chinese strategy can explain the logic, while the final answer remains natural English.
-- Privacy-conscious: browser-side v0, no account, no payment, no video storage.
+- Privacy-conscious: no account, no payment, no video storage, and AI calls only when the user requests generation or feedback.
 
 ## Primary ICP
 Primary user: Chinese-speaking or other non-native English candidates preparing for an English behavioral interview within the next 48 hours.
@@ -165,7 +165,7 @@ Voice practice is a likely v2 feature. It should be added before video because i
 
 ## Compliance and Trust Boundaries
 - State clearly that JD, resume, notes, and answers may contain personal information.
-- Keep v1 browser-side by default.
+- Keep v1 session state browser-side by default; use server-side AI calls only for explicit prep kit generation and answer feedback.
 - Do not store resumes, transcripts, or answers in a production account.
 - Do not send resume text, JD text, answer text, or notes to analytics.
 - Do not claim guaranteed interview performance, job offers, recruiter accuracy, or official employer feedback.

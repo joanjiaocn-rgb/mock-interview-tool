@@ -12,18 +12,19 @@
 ## Tool Task Checks
 - Select each role.
 - Switch level and format.
-- Switch round length between 5, 7, and 10 questions and confirm the question tabs update.
+- Switch round length between 8, 10, and 12 questions and confirm the question tabs update after building.
 - Timer starts, pauses, and resets.
 - Read prompt button is visible.
 - Record answer button is visible and gracefully disabled if microphone recording is unavailable.
 - Live transcript runs only when browser speech recognition is available; otherwise the local audio recording still works.
-- Paste or upload plain text resume content and build a resume-tailored question round.
+- Paste or upload plain text resume content and build an AI-generated or fallback resume-tailored question round.
 - Question tabs change the active prompt.
 - Answer textarea updates.
 - Rubric sliders update readiness score.
 - Export report downloads a Markdown file with suggested drafts and practiced answers.
 - Reset clears current session.
 - Analytics events do not include resume text, answer text, or microphone audio.
+- AI endpoints keep `OPENROUTER_API_KEY` server-side and fall back gracefully if the provider is unavailable.
 
 ## Mobile Checks
 - No horizontal scroll at 375px width.
