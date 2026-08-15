@@ -549,56 +549,82 @@ export function InterviewStudio() {
       const answer = exportAnswers[index]?.trim();
       return answer
         ? [
-            `${index + 1}. ${question.question}`,
-            `Suggested answer draft: ${question.englishDraft}`,
-            `Your practiced answer: ${answer}`,
+            `### Question ${index + 1}`,
+            "",
+            `**Question:** ${question.question}`,
+            "",
+            `**Suggested answer draft:** ${question.englishDraft}`,
+            "",
+            `**Your practiced answer:** ${answer}`,
             "",
           ]
         : [];
     });
 
     const suggestedAnswerDrafts = questions.slice(0, 6).flatMap((question, index) => [
-      `${index + 1}. ${question.question}`,
-      `Story match: ${question.storyMatch}`,
-      `Suggested answer draft: ${question.englishDraft}`,
+      `### Question ${index + 1}`,
+      "",
+      `**Question:** ${question.question}`,
+      "",
+      `**Story match:** ${question.storyMatch}`,
+      "",
+      `**Suggested answer draft:** ${question.englishDraft}`,
       "",
     ]);
 
     const report = [
-      "Interview English Coach - 48-Hour Prep Kit",
-      `Role: ${roleMeta.label}`,
-      `Level: ${levels.find((item) => item.id === level)?.label}`,
-      `Readiness score: ${score ?? "Not reviewed"}${score ? ` - ${scoreLabel(score)}` : ""}`,
+      "# 48-Hour English Interview Prep Kit",
       "",
-      "Interview Risk Map:",
-      ...riskMap.map((item, index) => `${index + 1}. ${item.signal} (${item.source}) - ${item.prepAdvice}`),
+      "## Overview",
       "",
-      "Top questions:",
+      `- **Role:** ${roleMeta.label}`,
+      `- **Level:** ${levels.find((item) => item.id === level)?.label}`,
+      `- **Readiness score:** ${score ?? "Not reviewed"}${score ? ` - ${scoreLabel(score)}` : ""}`,
+      "",
+      "## Interview Risk Map",
+      "",
+      ...riskMap.map((item, index) => `${index + 1}. **${item.signal}** (${item.source}) - ${item.prepAdvice}`),
+      "",
+      "## Top Questions",
+      "",
       ...questions.slice(0, 6).map((question, index) => `${index + 1}. ${question.question}`),
       "",
-      "Story match:",
+      "## Story Match",
+      "",
       ...questions.slice(0, 6).map((question, index) => `${index + 1}. ${question.storyMatch}`),
       "",
-      "Suggested answer drafts:",
+      "## Suggested Answer Drafts",
+      "",
       ...suggestedAnswerDrafts,
-      "Story bank:",
+      "## Story Bank",
+      "",
       ...(storyBank.length ? storyBank.map((line) => `- ${line}`) : ["- Add 3-5 concrete stories before your interview."]),
       "",
-      "English phrases to reuse:",
+      "## English Phrases To Reuse",
+      "",
       ...strongPhrases.map((phrase) => `- ${phrase}`),
       "",
-      "Practiced answers:",
+      "## Practiced Answers",
+      "",
       ...(practicedAnswers.length ? practicedAnswers : ["[No practiced answers yet]"]),
       "",
-      "Your review notes:",
+      "## Last-Minute Checklist",
+      "",
+      "- Rehearse the 3 strongest stories aloud.",
+      "- Add one metric, scope, or timeline to each key answer.",
+      "- Keep answers near 60-90 seconds when spoken.",
+      "- Avoid vague phrases like \"helped a lot\" or \"I just\".",
+      "",
+      "## Your Review Notes",
+      "",
       notes.trim() || "[No notes recorded]",
     ].join("\n");
 
-    const blob = new Blob([report], { type: "text/plain" });
+    const blob = new Blob([report], { type: "text/markdown" });
     const url = URL.createObjectURL(blob);
     const anchor = document.createElement("a");
     anchor.href = url;
-    anchor.download = "interview-english-prep-kit.txt";
+    anchor.download = "interview-english-prep-kit.md";
     anchor.click();
     URL.revokeObjectURL(url);
   };
@@ -782,7 +808,7 @@ export function InterviewStudio() {
               </button>
               <button className="voice-command" onClick={downloadCheatSheet} type="button">
                 <ArrowDownToLine size={17} aria-hidden="true" />
-                Export prep kit
+                Export Markdown Kit
               </button>
             </div>
           </div>
@@ -983,7 +1009,7 @@ export function InterviewStudio() {
           <div className="report-actions">
             <button className="button primary" onClick={downloadCheatSheet} type="button">
               <ArrowDownToLine size={17} aria-hidden="true" />
-              Export
+              Export Markdown
             </button>
             <button className="button secondary" onClick={resetWorkspace} type="button">
               <RefreshCcw size={17} aria-hidden="true" />

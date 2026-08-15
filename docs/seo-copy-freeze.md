@@ -34,7 +34,7 @@
   - Top Questions.
   - English draft to adapt.
   - Feedback score and rewrite moves.
-  - Export 48-hour prep kit.
+  - Export 48-hour prep kit as Markdown.
 
 ## Compliance Language
 Avoid:
@@ -53,5 +53,5 @@ Use:
 - risk map
 - story match
 - STAR outline
-- cheat sheet export
+- Markdown cheat sheet export
 - not an employment guarantee

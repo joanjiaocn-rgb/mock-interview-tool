@@ -5,7 +5,7 @@
 - Resume text: browser state only in v0; plain text upload or pasted content is used to tailor interview prompts.
 - Voice transcripts: browser state only in v0.
 - Coach notes: browser state only in v0.
-- Exported report: generated locally as a text file.
+- Exported report: generated locally as a Markdown file.
 - Audio: recorded locally in the browser session for playback; not uploaded or stored by this site.
 - Video: not recorded.
 - Accounts: not enabled.

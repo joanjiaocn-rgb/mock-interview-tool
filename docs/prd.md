@@ -55,7 +55,7 @@ Must include:
 - English answer draft per question.
 - Text practice answer input.
 - Feedback score across clarity, structure, specificity, English phrasing, and confidence.
-- Exportable 48-hour prep kit as a text file.
+- Exportable 48-hour prep kit as a Markdown file.
 - Privacy, Terms, Contact, sitemap, robots, llms.txt, Bing verification file, and GA4 event tracking.
 
 ## Not Do
@@ -87,7 +87,7 @@ Voice practice is a likely v2 feature. It should be added before video because i
    - English Draft: a starting answer to adapt.
 8. User rewrites one answer in their own English.
 9. User clicks "Get feedback."
-10. User exports the 48-hour prep kit.
+10. User exports the 48-hour prep kit as a Markdown file.
 
 ## Page Matrix
 | Route | Index | Primary Intent | Purpose |
@@ -180,7 +180,7 @@ The product is acceptable when:
 - The practice page uses "Build prep kit" language, not generic "practice set" language.
 - The tool shows a visible Risk Map.
 - Each question has a visible Story Match.
-- The export includes risk map, story bank, top questions, practiced answers, and notes.
+- The Markdown export includes risk map, story bank, top questions, suggested drafts, practiced answers, and notes.
 - Mobile users can complete the flow without horizontal overflow.
 - Build and Playwright smoke tests pass.
 

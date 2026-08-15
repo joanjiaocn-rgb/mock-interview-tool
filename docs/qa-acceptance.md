@@ -21,7 +21,7 @@
 - Question tabs change the active prompt.
 - Answer textarea updates.
 - Rubric sliders update readiness score.
-- Export report downloads a text file.
+- Export report downloads a Markdown file with suggested drafts and practiced answers.
 - Reset clears current session.
 - Analytics events do not include resume text, answer text, or microphone audio.
 

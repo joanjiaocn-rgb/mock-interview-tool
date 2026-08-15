@@ -44,17 +44,19 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
   await reviewNotes.fill("Needs a concrete production example and clearer metric.");
   await expect(page.getByText("1 practiced")).toBeVisible();
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export", exact: true }).click();
+  await page.getByRole("button", { name: "Export Markdown", exact: true }).click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
+  expect(download.suggestedFilename()).toBe("interview-english-prep-kit.md");
   const report = await readFile(downloadPath!, "utf8");
-  expect(report).toContain("Interview English Coach - 48-Hour Prep Kit");
-  expect(report).toContain("Interview Risk Map:");
-  expect(report).toContain("Story match:");
-  expect(report).toContain("Suggested answer drafts:");
-  expect(report).toContain(`Suggested answer draft: ${firstDraft}`);
-  expect(report).toContain(`Your practiced answer: ${practicedAnswer}`);
+  expect(report).toContain("# 48-Hour English Interview Prep Kit");
+  expect(report).toContain("## Interview Risk Map");
+  expect(report).toContain("## Story Match");
+  expect(report).toContain("## Suggested Answer Drafts");
+  expect(report).toContain(`**Suggested answer draft:** ${firstDraft}`);
+  expect(report).toContain(`**Your practiced answer:** ${practicedAnswer}`);
+  expect(report).toContain("## Last-Minute Checklist");
   expect(report).not.toContain("One example that fits this role");
 });
 
@@ -70,14 +72,15 @@ test("prep kit export includes suggested drafts before the user practices", asyn
   const firstDraft = await page.getByLabel(/Example answer to adapt/).inputValue();
 
   const downloadPromise = page.waitForEvent("download");
-  await page.getByRole("button", { name: "Export", exact: true }).click();
+  await page.getByRole("button", { name: "Export Markdown", exact: true }).click();
   const download = await downloadPromise;
   const downloadPath = await download.path();
   expect(downloadPath).not.toBeNull();
+  expect(download.suggestedFilename()).toBe("interview-english-prep-kit.md");
   const report = await readFile(downloadPath!, "utf8");
 
-  expect(report).toContain("Suggested answer drafts:");
-  expect(report).toContain(`Suggested answer draft: ${firstDraft}`);
+  expect(report).toContain("## Suggested Answer Drafts");
+  expect(report).toContain(`**Suggested answer draft:** ${firstDraft}`);
   expect(report).toContain("[No practiced answers yet]");
 });
 
