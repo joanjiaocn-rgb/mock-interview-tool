@@ -52,8 +52,33 @@ test("home page exposes the English interview prep workflow", async ({ page }) =
   expect(report).toContain("Interview English Coach - 48-Hour Prep Kit");
   expect(report).toContain("Interview Risk Map:");
   expect(report).toContain("Story match:");
-  expect(report).toContain(`Your answer: ${practicedAnswer}`);
+  expect(report).toContain("Suggested answer drafts:");
+  expect(report).toContain(`Suggested answer draft: ${firstDraft}`);
+  expect(report).toContain(`Your practiced answer: ${practicedAnswer}`);
   expect(report).not.toContain("One example that fits this role");
+});
+
+test("prep kit export includes suggested drafts before the user practices", async ({ page }) => {
+  await page.goto("/practice");
+
+  await page.getByLabel("Target role").selectOption("data");
+  await page.getByLabel("Job description").fill("Data Analyst role focused on SQL, dashboards, funnel analysis, retention, experiments, and stakeholder communication.");
+  await page.getByLabel("Resume or experience notes").fill(
+    "Data Analyst with 3 years of experience who built Tableau dashboards, analyzed signup funnel drop-off, improved completion rate by 14%, and explained A/B test tradeoffs to product and marketing teams.",
+  );
+  await page.getByRole("button", { name: "Build prep kit", exact: true }).click();
+  const firstDraft = await page.getByLabel(/Example answer to adapt/).inputValue();
+
+  const downloadPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Export", exact: true }).click();
+  const download = await downloadPromise;
+  const downloadPath = await download.path();
+  expect(downloadPath).not.toBeNull();
+  const report = await readFile(downloadPath!, "utf8");
+
+  expect(report).toContain("Suggested answer drafts:");
+  expect(report).toContain(`Suggested answer draft: ${firstDraft}`);
+  expect(report).toContain("[No practiced answers yet]");
 });
 
 test("mobile layout avoids horizontal overflow", async ({ page }) => {

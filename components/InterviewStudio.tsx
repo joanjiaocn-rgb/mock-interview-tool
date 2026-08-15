@@ -550,11 +550,19 @@ export function InterviewStudio() {
       return answer
         ? [
             `${index + 1}. ${question.question}`,
-            `Your answer: ${answer}`,
+            `Suggested answer draft: ${question.englishDraft}`,
+            `Your practiced answer: ${answer}`,
             "",
           ]
         : [];
     });
+
+    const suggestedAnswerDrafts = questions.slice(0, 6).flatMap((question, index) => [
+      `${index + 1}. ${question.question}`,
+      `Story match: ${question.storyMatch}`,
+      `Suggested answer draft: ${question.englishDraft}`,
+      "",
+    ]);
 
     const report = [
       "Interview English Coach - 48-Hour Prep Kit",
@@ -571,6 +579,8 @@ export function InterviewStudio() {
       "Story match:",
       ...questions.slice(0, 6).map((question, index) => `${index + 1}. ${question.storyMatch}`),
       "",
+      "Suggested answer drafts:",
+      ...suggestedAnswerDrafts,
       "Story bank:",
       ...(storyBank.length ? storyBank.map((line) => `- ${line}`) : ["- Add 3-5 concrete stories before your interview."]),
       "",
